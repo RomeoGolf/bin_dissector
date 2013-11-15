@@ -35,10 +35,10 @@ def get_vars(df, block_num):
         index = 0
         for item in data_config.config:
             s = str(item[0])
-            if item[2] == 1:
+            if item[2] == 1:    #single variable
                 v = int.from_bytes(packet[index:(index+item[1])], 'little')
                 variables.update({s: v})
-            else:
+            else:               # array
                 s1 = "<%d%s" % (item[2], _data_type[item[1]])
                 p = packet[index:(index+item[1]*item[2])]
                 v = struct.unpack(s1, p)
