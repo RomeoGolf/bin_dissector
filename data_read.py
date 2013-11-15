@@ -44,25 +44,6 @@ def get_vars(df, block_num):
                 v = struct.unpack(s1, p)
                 variables.update({s: v})
 
-#                if item[1] == 1:
-#                    s1 = "<%dB" % (item[2])
-#                    p = packet[index:(index+item[1]*item[2])]
-#                    v = struct.unpack(s1, p)
-#                    variables.update({s: v})
-#                elif item[1] == 4:
-#                    s1 = "<%di" % (item[2])
-#                    p = packet[index:(index+item[1]*item[2])]
-#                    v = struct.unpack(s1, p)
-#                    variables.update({s: v})
-#                else:
-#                    raise Exception("Unsupported data type")
-#                    v = [];
-#                    for i in range(item[2] - 1):
-#                        buf = packet[index + i * item[1] : (index + (i + 1) * item[1])]
-#                        v.append(int.from_bytes(buf, 'little'))
-#                    variables.update({s: v})
-
-
             index = index + item[1] * item[2]
         yield variables
 
