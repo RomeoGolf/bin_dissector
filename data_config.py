@@ -1,5 +1,5 @@
 
-config_fname = "config_2.txt"     # name of configuration file
+config_fname = "data/config_2.txt"     # name of configuration file
 
 # get config strings
 config_file = open(config_fname, "rt")

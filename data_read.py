@@ -22,7 +22,7 @@ import os
 import matplotlib.pyplot as plt
 import time
 
-data_fname = "02.bin"
+data_fname = "data/02.bin"
 # (66, 83, 73, 64, 100, 50, 49, 48)
 
 block_num = os.path.getsize(data_fname) // data_config.packet_length
