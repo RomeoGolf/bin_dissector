@@ -20,6 +20,7 @@ import data_config
 import struct
 import os
 import matplotlib.pyplot as plt
+import matplotlib.pylab as plb
 import time
 import swertka
 import numpy as np
@@ -57,33 +58,49 @@ data_file = open(data_fname, "rb")
 #data_file.seek(data_config.packet_length * 500)
 lHi = []
 
-#plt.ion()
-for i in get_vars(data_file, 1000):
-#for i in get_vars(data_file, block_num):
+##plt.ion()
+##x = range(60)
+##y = [1 for i in x]
+##y[0] = 20000
+##line1, = plb.plot(x, y)
+##line2, = plb.plot(x, y)
+
+#for i in get_vars(data_file, 100):
+for i in get_vars(data_file, block_num):
     #print(i['Swertka'])
     res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
             i['Diapazon'], i['Srez'])
 
-#    lHi.append(i['Hi'] / 8)
-#    plt.clf()
-#    plt.plot(res)
-#    plt.plot(i['Swertka'][0:i['Num_Swr']])
-#    plt.draw()
-#plt.close()
+    lHi.append(i['Hi'] / 8)
+##    if len(line1.get_xdata()) != i['Num_Swr']:
+##        line1.set_xdata(range(i['Num_Swr']))
+##        line2.set_xdata(range(i['Num_Swr']))
+##        line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
+##
+##    line1.set_ydata(res)
+##    line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
+##    plt.draw()
 
 #    print(i["Hi"])
     #if (i['Npack_'] % 1000) == 0:
     if (i['Npack_'] % 100) == 0:
         print(i["Npack_"])
 
+##plt.close()
+
 #plt.plot(res)
 #plt.plot(i['Swertka'][0:i['Num_Swr']])
 #plt.show()
 
+
 data_file.close()
 
 t2 = time.perf_counter() - t1
-print('Stop! Elapsed time is %f s' % t2)
+Secs = t2 % 60
+Mins = (t2/60) % 60
+Hrs = (t2/3600) % 60
+print('Stop! Elapsed time is %d h %d min %f s' % (Hrs, Mins, Secs))
+##print('Stop! Elapsed time is %f s' % (t2))
 
 #plt.plot(lHi)
 #plt.show()
