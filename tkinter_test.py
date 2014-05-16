@@ -50,8 +50,8 @@ class Application(tk.Frame):
         self.bt_data = tk.Button(g_files, text = 'select...')
         self.bt_config.grid(row = 0, column = 2)
         self.bt_data.grid(row = 1, column = 2)
-        self.bt_config['command'] = self.get_config_file
-        self.bt_data['command'] = self.get_data_file
+        self.bt_config['command'] = lambda : self.get_fname('config')
+        self.bt_data['command'] = lambda : self.get_fname('data')
 
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
@@ -72,19 +72,20 @@ class Application(tk.Frame):
         #self.pb["maximum"] = 5
         self.pb.config(maximum=5)
 
-    def get_config_file(self):
-        ftypes = [('config files', '*.txt'), ('All files', '*')]
+    def get_fname(self, what_file):
+        if what_file == 'config':
+            ftypes = [('config files', '*.txt'), ('All files', '*')]
+        else:
+            ftypes = [('data files', '*.bin'), ('All files', '*')]
         dlg = tk.filedialog.Open(self, filetypes = ftypes)
-        self.config_file = dlg.show()
-        if self.config_file != '':
-            self.l_config['text'] = self.config_file
-
-    def get_data_file(self):
-        ftypes = [('data files', '*.bin'), ('All files', '*')]
-        dlg = tk.filedialog.Open(self, filetypes = ftypes)
-        self.data_file = dlg.show()
-        if self.data_file != '':
-            self.l_data['text'] = self.data_file
+        fname = dlg.show()
+        if fname != '':
+            if what_file == 'config':
+                self.config_file = fname
+                self.l_config['text'] = self.config_file
+            else:
+                self.data_file = fname
+                self.l_data['text'] = self.data_file
 
 
 root = tk.Tk()
