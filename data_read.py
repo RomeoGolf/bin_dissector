@@ -16,7 +16,9 @@
 #    main()
 
 
-import data_config
+#import data_config
+from data_config import *
+
 import struct
 import os
 import matplotlib.pyplot as plt
@@ -27,17 +29,23 @@ import numpy as np
 
 data_fname = "data/02.bin"
 # (66, 83, 73, 64, 100, 50, 49, 48)
+config_fname = "data/config_2.txt"
+
+dconf = DataConfig(config_fname)
+dconf.GetConfigStrings()
+dconf.GetConfigList()
+dconf.GetDataPacketLength()
 
 # quantity of blocks
-block_num = os.path.getsize(data_fname) // data_config.packet_length
+block_num = os.path.getsize(data_fname) // dconf.packet_length
 
 def get_vars(df, block_num):
     _data_type = {1:'B', 2:'H', 4:'I'}
     for i in range(block_num):
-        packet = df.read(data_config.packet_length)
+        packet = df.read(dconf.packet_length)
         variables = {};
         index = 0
-        for item in data_config.config:
+        for item in dconf.config:
             s = str(item[0])
             if item[2] == 1:    #single variable
                 v = int.from_bytes(packet[index:(index+item[1])], 'little')
@@ -55,7 +63,7 @@ print('Start...')
 t1 = time.perf_counter()
 
 data_file = open(data_fname, "rb")
-#data_file.seek(data_config.packet_length * 500)
+#data_file.seek(dconf.packet_length * 500)
 lHi = []
 
 fig = plt.figure()
