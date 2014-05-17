@@ -5,9 +5,6 @@ class DataConfig:
     def __init__(self, fname):
         self.config_fname = fname
 
-    def Barrr(self):
-        print('bar')
-
     def GetConfigStrings(self):
         self.config_file = open(self.config_fname, "rt")
         self.lines = self.config_file.readlines()
@@ -38,7 +35,3 @@ class DataConfig:
         for item in self.config:
             self.packet_length = self.packet_length + item[1] * item[2]
         return self.packet_length
-
-    def Foo(self):
-        print('qwerty')
-
