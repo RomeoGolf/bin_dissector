@@ -58,12 +58,13 @@ data_file = open(data_fname, "rb")
 #data_file.seek(data_config.packet_length * 500)
 lHi = []
 
-##plt.ion()
-##x = range(60)
-##y = [1 for i in x]
-##y[0] = 20000
-##line1, = plb.plot(x, y)
-##line2, = plb.plot(x, y)
+fig = plt.figure()
+plt.ion()
+x = range(60)
+y = [1 for i in x]
+y[0] = 20000
+line1, = plb.plot(x, y)
+line2, = plb.plot(x, y)
 
 #for i in get_vars(data_file, 100):
 for i in get_vars(data_file, block_num):
@@ -72,21 +73,23 @@ for i in get_vars(data_file, block_num):
             i['Diapazon'], i['Srez'])
 
     lHi.append(i['Hi'] / 8)
-##    if len(line1.get_xdata()) != i['Num_Swr']:
-##        line1.set_xdata(range(i['Num_Swr']))
-##        line2.set_xdata(range(i['Num_Swr']))
-##        line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
-##
-##    line1.set_ydata(res)
-##    line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
-##    plt.draw()
+    if len(line1.get_xdata()) != i['Num_Swr']:
+        line1.set_xdata(range(i['Num_Swr']))
+        line2.set_xdata(range(i['Num_Swr']))
+        line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
+
+    line1.set_ydata(res)
+    line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
+    plt.draw()
+    #plt.pause(0.0001)
+    fig.canvas.flush_events()
 
 #    print(i["Hi"])
     #if (i['Npack_'] % 1000) == 0:
     if (i['Npack_'] % 100) == 0:
         print(i["Npack_"])
 
-##plt.close()
+plt.close()
 
 #plt.plot(res)
 #plt.plot(i['Swertka'][0:i['Num_Swr']])
