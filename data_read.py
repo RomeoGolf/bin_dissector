@@ -6,7 +6,6 @@
 #
 # Created:     14.11.2013
 # Copyright:   (c) GordonRV 2013
-# Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
 #def main():
@@ -32,9 +31,6 @@ data_fname = "data/02.bin"
 config_fname = "data/config_2.txt"
 
 dconf = DataConfig(config_fname)
-dconf.GetConfigStrings()
-dconf.GetConfigList()
-dconf.GetDataPacketLength()
 
 # quantity of blocks
 block_num = os.path.getsize(data_fname) // dconf.packet_length

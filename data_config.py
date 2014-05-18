@@ -4,6 +4,9 @@
 class DataConfig:
     def __init__(self, fname):
         self.config_fname = fname
+        self.GetConfigStrings()
+        self.GetConfigList()
+        self.GetDataPacketLength()
 
     def GetConfigStrings(self):
         self.config_file = open(self.config_fname, "rt")
