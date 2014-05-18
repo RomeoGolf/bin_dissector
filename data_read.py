@@ -30,31 +30,34 @@ data_fname = "data/02.bin"
 # (66, 83, 73, 64, 100, 50, 49, 48)
 config_fname = "data/config_2.txt"
 
-dconf = DataConfig(config_fname)
+class DataRead:
+    def __init__(self):
+        self.dconf = DataConfig(config_fname)
+        # quantity of blocks
+        self.block_num = os.path.getsize(data_fname) // self.dconf.packet_length
+        
+    def get_vars(self, df, block_num):
+        _data_type = {1:'B', 2:'H', 4:'I'}
+        for i in range(self.block_num):
+            packet = df.read(self.dconf.packet_length)
+            variables = {};
+            index = 0
+            for item in self.dconf.config:
+                s = str(item[0])
+                if item[2] == 1:    #single variable
+                    v = int.from_bytes(packet[index:(index+item[1])], 'little')
+                    variables.update({s: v})
+                else:               # array
+                    s1 = "<%d%s" % (item[2], _data_type[item[1]])
+                    p = packet[index:(index+item[1]*item[2])]
+                    v = np.asarray(struct.unpack(s1, p))
+                    variables.update({s: v})
+                index = index + item[1] * item[2]
+            yield variables
+            
+dr = DataRead()
 
-# quantity of blocks
-block_num = os.path.getsize(data_fname) // dconf.packet_length
-
-def get_vars(df, block_num):
-    _data_type = {1:'B', 2:'H', 4:'I'}
-    for i in range(block_num):
-        packet = df.read(dconf.packet_length)
-        variables = {};
-        index = 0
-        for item in dconf.config:
-            s = str(item[0])
-            if item[2] == 1:    #single variable
-                v = int.from_bytes(packet[index:(index+item[1])], 'little')
-                variables.update({s: v})
-            else:               # array
-                s1 = "<%d%s" % (item[2], _data_type[item[1]])
-                p = packet[index:(index+item[1]*item[2])]
-                v = np.asarray(struct.unpack(s1, p))
-                variables.update({s: v})
-            index = index + item[1] * item[2]
-        yield variables
-
-print('Block quantity = %d' % block_num)
+print('Block quantity = %d' % dr.block_num)
 print('Start...')
 t1 = time.perf_counter()
 
@@ -71,7 +74,7 @@ line1, = plb.plot(x, y)
 line2, = plb.plot(x, y)
 
 #for i in get_vars(data_file, 100):
-for i in get_vars(data_file, block_num):
+for i in dr.get_vars(data_file, dr.block_num):
     #print(i['Swertka'])
     res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
             i['Diapazon'], i['Srez'])
