@@ -175,27 +175,22 @@ class Application(tk.Frame):
             self.pb.step()
             if self.pb["value"] > 0:
                 t2 = time.perf_counter() - t1
-                Secs = t2 % 60
-                Mins = (t2/60) % 60
-                Hrs = (t2/3600) % 60
-                self.l_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
-
+                self.l_time["text"] = self.time_to_text(t2)
                 t_expected = (t2 / self.pb["value"]) * self.pb["maximum"]
-                Secs = t_expected % 60
-                Mins = (t_expected/60) % 60
-                Hrs = (t_expected/3600) % 60
-                self.l_exp_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
-
+                self.l_exp_time["text"] = self.time_to_text(t_expected)
                 t_remained = t_expected - t2
-                Secs = t_remained % 60
-                Mins = (t_remained/60) % 60
-                Hrs = (t_remained/3600) % 60
-                self.l_rem_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
+                self.l_rem_time["text"] = self.time_to_text(t_remained)
             self.update()
 
         plt.close()
         data_file.close()
         self.bt_process["state"] = 'normal'
+
+    def time_to_text(self, t):
+        Secs = t % 60
+        Mins = (t/60) % 60
+        Hrs = (t/3600) % 60
+        return '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
 
     def save_app_config(self):
         if not self.config.has_section('FILES'):
