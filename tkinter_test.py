@@ -63,6 +63,7 @@ class Application(tk.Frame):
 
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
+        tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
 
         g_info = ttk.LabelFrame(self, text = "Info", padding = 5)
         g_info.pack(fill = 'x', expand = 1)
@@ -86,8 +87,6 @@ class Application(tk.Frame):
         Label(g_info, text = 'Expected time: ').grid(row = 4)
         self.l_exp_time = Label(g_info, text = '-')
         self.l_exp_time.grid(row = 4, column = 1)
-
-        tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
 
         self.bt_open = tk.Button(self)
         self.bt_open["text"] = "Open"
