@@ -194,13 +194,7 @@ class Application(tk.Frame):
             self.update()
 
         plt.close()
-
         data_file.close()
-        t2 = time.perf_counter() - t1
-        Secs = t2 % 60
-        Mins = (t2/60) % 60
-        Hrs = (t2/3600) % 60
-        print('Stop! Elapsed time is %d h %d min %f s' % (Hrs, Mins, Secs))
         self.bt_process["state"] = 'normal'
 
     def save_app_config(self):
