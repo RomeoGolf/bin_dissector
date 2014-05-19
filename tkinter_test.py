@@ -17,7 +17,7 @@ class Application(tk.Frame):
         tk.Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
-        self.centerWindow()
+        #self.centerWindow()
 
     def centerWindow(self):
         w = 390
