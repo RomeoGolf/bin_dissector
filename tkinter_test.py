@@ -61,6 +61,16 @@ class Application(tk.Frame):
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
 
+        g_info = ttk.LabelFrame(self, text = "Info", padding = 5)
+        g_info.pack(fill = 'x', expand = 1)
+
+        Label(g_info, text = 'packet: ').grid(row = 0)
+        Label(g_info, text = 'time: ').grid(row = 1)
+        self.l_packet = Label(g_info, text = '0')
+        self.l_time = Label(g_info, text = '-')
+        self.l_packet.grid(row = 0, column = 1)
+        self.l_time.grid(row = 1, column = 1)
+
         tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
 
         self.bt_open = tk.Button(self)
@@ -72,7 +82,7 @@ class Application(tk.Frame):
         self.bt_process["text"] = "Process"
         self.bt_process["command"] = self.process_data
         self.bt_process.pack(pady=5)
-        
+
         self.QUIT = tk.Button(self, text="QUIT", fg="red",
                                             command=root.destroy)
         self.QUIT.pack(side="bottom")
@@ -96,11 +106,11 @@ class Application(tk.Frame):
             else:
                 self.data_file = fname
                 self.l_data['text'] = self.data_file
-                
+
     def open_data(self):
         self.dr = DataRead()
         print('Block quantity = %d' % self.dr.block_num)
-        
+
     def process_data(self):
         print('Start...')
         t1 = time.perf_counter()
@@ -127,8 +137,9 @@ class Application(tk.Frame):
             line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
             plt.draw()
             fig.canvas.flush_events()
-            if (i['Npack_'] % 100) == 0:
-                print(i["Npack_"])
+            self.l_packet["text"] = str(i["Npack_"])
+            #if (i['Npack_'] % 100) == 0:
+            #    print(i["Npack_"])
         plt.close()
 
         data_file.close()
