@@ -67,12 +67,25 @@ class Application(tk.Frame):
         g_info = ttk.LabelFrame(self, text = "Info", padding = 5)
         g_info.pack(fill = 'x', expand = 1)
 
-        Label(g_info, text = 'packet: ').grid(row = 0)
-        Label(g_info, text = 'time: ').grid(row = 1)
+        Label(g_info, text = 'packets: ').grid(row = 0)
+        self.l_packets = Label(g_info, text = '-')
+        self.l_packets.grid(row = 0, column = 1)
+
+        Label(g_info, text = 'packet: ').grid(row = 1)
         self.l_packet = Label(g_info, text = '0')
+        self.l_packet.grid(row = 1, column = 1)
+
+        Label(g_info, text = 'Elapsed time: ').grid(row = 2)
         self.l_time = Label(g_info, text = '-')
-        self.l_packet.grid(row = 0, column = 1)
-        self.l_time.grid(row = 1, column = 1)
+        self.l_time.grid(row = 2, column = 1)
+
+        Label(g_info, text = 'Remained time: ').grid(row = 3)
+        self.l_rem_time = Label(g_info, text = '-')
+        self.l_rem_time.grid(row = 3, column = 1)
+
+        Label(g_info, text = 'Expected time: ').grid(row = 4)
+        self.l_exp_time = Label(g_info, text = '-')
+        self.l_exp_time.grid(row = 4, column = 1)
 
         tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
 
