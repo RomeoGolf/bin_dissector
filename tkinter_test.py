@@ -157,16 +157,17 @@ class Application(tk.Frame):
                 break
             res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
                                       i['Diapazon'], i['Srez'])
-            lHi.append(i['Hi'] / 8)
-            if len(line1.get_xdata()) != i['Num_Swr']:
-                line1.set_xdata(range(i['Num_Swr']))
-                line2.set_xdata(range(i['Num_Swr']))
-                line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
+            #lHi.append(i['Hi'] / 8)
+            if self.is_show_graph.get() == 1:
+                if len(line1.get_xdata()) != i['Num_Swr']:
+                    line1.set_xdata(range(i['Num_Swr']))
+                    line2.set_xdata(range(i['Num_Swr']))
+                    line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
 
-            line1.set_ydata(res)
-            line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
-            plt.draw()
-            fig.canvas.flush_events()
+                line1.set_ydata(res)
+                line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
+                plt.draw()
+                fig.canvas.flush_events()
             self.l_packet["text"] = str(i["Npack_"])
             #if (i['Npack_'] % 100) == 0:
             #    print(i["Npack_"])
