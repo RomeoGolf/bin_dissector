@@ -1,6 +1,4 @@
 
-
-
 class DataConfig:
     def __init__(self, fname):
         self.config_fname = fname

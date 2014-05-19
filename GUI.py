@@ -6,7 +6,6 @@ from tkinter import Tk, ttk, tix, Frame, Label, filedialog
 import configparser
 
 class Application(tk.Frame):
-
     def __init__(self, master=None):
         self.ini_file = 'setting.ini'
         self.config = configparser.ConfigParser()
@@ -89,7 +88,7 @@ class Application(tk.Frame):
         self.l_packets = Label(g_info, text = '-')
         self.l_packets.grid(row = 0, column = 1)
 
-        Label(g_info, text = 'packet: ').grid(row = 1)
+        Label(g_info, text = 'packet #: ').grid(row = 1)
         self.l_packet = Label(g_info, text = '0')
         self.l_packet.grid(row = 1, column = 1)
 
