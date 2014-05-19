@@ -52,7 +52,6 @@ class Application(tk.Frame):
         if self.config.has_option('OPTIONS', 'skip_end'):
             self.str_skip_e.set(self.config.getint('OPTIONS', 'skip_end'))
 
-
         g_files = ttk.LabelFrame(self, text = "Files", padding = 5)
         g_files.pack(fill = 'x', expand = 1)
         Label(g_files, text = 'config: ').grid(row = 0)
@@ -145,7 +144,6 @@ class Application(tk.Frame):
 
     def open_data(self):
         self.dr = DataRead()
-        #print('Block quantity = %d' % self.dr.block_num)
         self.l_packets["text"] = '%d' % self.dr.block_num
 
     def set_stop(self):
@@ -153,7 +151,6 @@ class Application(tk.Frame):
 
     def process_data(self):
         self.bt_process["state"] = 'disabled'
-        print('Start...')
         if self.is_use_skip.get() == 1:
             skip_b = int(self.str_skip_b.get())
             skip_e = int(self.str_skip_e.get())
@@ -183,7 +180,6 @@ class Application(tk.Frame):
                 break
             res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
                                       i['Diapazon'], i['Srez'])
-            #lHi.append(i['Hi'] / 8)
             if self.is_show_graph.get() == 1:
                 if len(line1.get_xdata()) != i['Num_Swr']:
                     line1.set_xdata(range(i['Num_Swr']))
@@ -195,8 +191,6 @@ class Application(tk.Frame):
                 plt.draw()
                 fig.canvas.flush_events()
             self.l_packet["text"] = str(i["Npack_"])
-            #if (i['Npack_'] % 100) == 0:
-            #    print(i["Npack_"])
 
             self.pb.step()
             if self.pb["value"] > 0:
@@ -230,8 +224,6 @@ class Application(tk.Frame):
         self.config.set('OPTIONS', 'skip_begin', self.str_skip_b.get())
         self.config.set('OPTIONS', 'skip_end', self.str_skip_e.get())
 
-
-
         with open(self.ini_file, 'w') as configfile:
             self.config.write(configfile)
 
@@ -239,5 +231,3 @@ root = tk.Tk()
 app = Application(master=root)
 app.mainloop()
 app.save_app_config()
-
-
