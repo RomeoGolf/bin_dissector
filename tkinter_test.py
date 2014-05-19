@@ -16,16 +16,13 @@ class Application(tk.Frame):
         tk.Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
-        #self.centerWindow()
+        self.setWindowPosition()
+        self.master.bind("<Configure>", self.save_geometry)
 
-    def centerWindow(self):
-        w = 390
-        h = 250
-        sw = self.master.winfo_screenwidth()
-        sh = self.master.winfo_screenheight()
-        x = (sw - w)/2
-        y = (sh - h)/2
-        self.master.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    def setWindowPosition(self):
+        if self.config.has_option('POS', 'geom'):
+            g = self.config.get('POS', 'geom').split('+')
+            self.master.geometry('+%s+%s' % (g[1], g[2]))
 
     def createWidgets(self):
         if self.config.has_option('FILES', 'config'):
@@ -226,6 +223,11 @@ class Application(tk.Frame):
 
         with open(self.ini_file, 'w') as configfile:
             self.config.write(configfile)
+
+    def save_geometry(self, event):
+        if not self.config.has_section('POS'):
+            self.config.add_section('POS')
+        self.config.set('POS', 'geom', self.master.geometry(None))
 
 root = tk.Tk()
 app = Application(master=root)
