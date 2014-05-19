@@ -130,7 +130,8 @@ class Application(tk.Frame):
 
     def open_data(self):
         self.dr = DataRead()
-        print('Block quantity = %d' % self.dr.block_num)
+        #print('Block quantity = %d' % self.dr.block_num)
+        self.l_packets["text"] = '%d' % self.dr.block_num
 
     def set_stop(self):
         self.stop = True
