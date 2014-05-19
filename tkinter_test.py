@@ -81,14 +81,14 @@ class Application(tk.Frame):
         self.bt_process = tk.Button(self)
         self.bt_process["text"] = "Process"
         self.bt_process["command"] = self.process_data
-        self.bt_process.pack(pady=5)
+        self.bt_process.pack(pady = 5)
 
         self.QUIT = tk.Button(self, text="QUIT", fg="red",
                                             command=root.destroy)
-        self.QUIT.pack(side="bottom")
+        self.QUIT.pack(side="bottom", pady = 5)
 
-        self.pb = tk.ttk.Progressbar(self, maximum = 10)
-        self.pb.pack()
+        self.pb = tk.ttk.Progressbar(self, maximum = 10, )
+        self.pb.pack(fill = 'x', expand = 1, pady = 5)
         #self.pb["maximum"] = 5
         self.pb.config(maximum=5)
 
