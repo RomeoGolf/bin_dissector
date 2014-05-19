@@ -5,15 +5,17 @@ import tkinter as tk
 from tkinter import Tk, ttk, tix, Frame, Label, filedialog
 import configparser
 
-ini_file = 'setting.ini'
-config = configparser.ConfigParser()
-config.read(ini_file)
 
 skip = 7000
 endskip = 5000
 
 class Application(tk.Frame):
+
     def __init__(self, master=None):
+        self.ini_file = 'setting.ini'
+        self.config = configparser.ConfigParser()
+        self.config.read(self.ini_file)
+
         tk.Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
@@ -29,18 +31,18 @@ class Application(tk.Frame):
         self.master.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
     def createWidgets(self):
-        if config.has_option('FILES', 'config'):
-            self.config_file = config.get('FILES', 'config')
+        if self.config.has_option('FILES', 'config'):
+            self.config_file = self.config.get('FILES', 'config')
         else:
             self.config_file = ''
-        if config.has_option('FILES', 'data'):
-            self.data_file = config.get('FILES', 'data')
+        if self.config.has_option('FILES', 'data'):
+            self.data_file = self.config.get('FILES', 'data')
         else:
             self.data_file = ''
 
         self.is_show_graph = tk.IntVar()
-        if config.has_option('OPTIONS', 'graph'):
-            self.is_show_graph.set(config.getint('OPTIONS', 'graph'))
+        if self.config.has_option('OPTIONS', 'graph'):
+            self.is_show_graph.set(self.config.getint('OPTIONS', 'graph'))
 
         g_files = ttk.LabelFrame(self, text = "Files", padding = 5)
         g_files.pack(fill = 'x', expand = 1)
@@ -151,16 +153,20 @@ class Application(tk.Frame):
         print('Stop! Elapsed time is %d h %d min %f s' % (Hrs, Mins, Secs))
         self.bt_process["state"] = 'normal'
 
+    def save_app_config(self):
+        if not self.config.has_section('FILES'):
+            self.config.add_section('FILES')
+        self.config.set('FILES', 'config', self.config_file)
+        self.config.set('FILES', 'data', self.data_file)
+        if not self.config.has_section('OPTIONS'):
+            self.config.add_section('OPTIONS')
+        self.config.set('OPTIONS', 'graph', str(self.is_show_graph.get()))
+        with open(self.ini_file, 'w') as configfile:
+            self.config.write(configfile)
+
 root = tk.Tk()
 app = Application(master=root)
 app.mainloop()
+app.save_app_config()
 
-if not config.has_section('FILES'):
-    config.add_section('FILES')
-config.set('FILES', 'config', app.config_file)
-config.set('FILES', 'data', app.data_file)
-if not config.has_section('OPTIONS'):
-    config.add_section('OPTIONS')
-config.set('OPTIONS', 'graph', str(app.is_show_graph.get()))
-with open(ini_file, 'w') as configfile:
-    config.write(configfile)
+
