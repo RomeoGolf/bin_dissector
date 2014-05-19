@@ -26,13 +26,13 @@ class Application(tk.Frame):
 
     def createWidgets(self):
         if self.config.has_option('FILES', 'config'):
-            self.config_file = self.config.get('FILES', 'config')
+            self.config_file_name = self.config.get('FILES', 'config')
         else:
-            self.config_file = ''
+            self.config_file_name = ''
         if self.config.has_option('FILES', 'data'):
-            self.data_file = self.config.get('FILES', 'data')
+            self.data_file_name = self.config.get('FILES', 'data')
         else:
-            self.data_file = ''
+            self.data_file_name = ''
 
         self.is_show_graph = tk.IntVar()
         self.is_use_skip = tk.IntVar()
@@ -53,8 +53,8 @@ class Application(tk.Frame):
         g_files.pack(fill = 'x', expand = 1)
         Label(g_files, text = 'config: ').grid(row = 0)
         Label(g_files, text = 'data: ').grid(row = 1)
-        self.l_config = Label(g_files, text = self.config_file)
-        self.l_data = Label(g_files, text = self.data_file)
+        self.l_config = Label(g_files, text = self.config_file_name)
+        self.l_data = Label(g_files, text = self.data_file_name)
         self.l_config.grid(row = 0, column = 1)
         self.l_data.grid(row = 1, column = 1)
 
@@ -133,11 +133,11 @@ class Application(tk.Frame):
         fname = dlg.show()
         if fname != '':
             if what_file == 'config':
-                self.config_file = fname
-                self.l_config['text'] = self.config_file
+                self.config_file_name = fname
+                self.l_config['text'] = self.config_file_name
             else:
-                self.data_file = fname
-                self.l_data['text'] = self.data_file
+                self.data_file_name = fname
+                self.l_data['text'] = self.data_file_name
 
     def open_data(self):
         self.dr = DataRead()
@@ -212,8 +212,8 @@ class Application(tk.Frame):
     def save_app_config(self):
         if not self.config.has_section('FILES'):
             self.config.add_section('FILES')
-        self.config.set('FILES', 'config', self.config_file)
-        self.config.set('FILES', 'data', self.data_file)
+        self.config.set('FILES', 'config', self.config_file_name)
+        self.config.set('FILES', 'data', self.data_file_name)
         if not self.config.has_section('OPTIONS'):
             self.config.add_section('OPTIONS')
         self.config.set('OPTIONS', 'graph', str(self.is_show_graph.get()))
