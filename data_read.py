@@ -26,16 +26,14 @@ import time
 import swertka
 import numpy as np
 
-data_fname = "data/02.bin"
 # (66, 83, 73, 64, 100, 50, 49, 48)
-config_fname = "data/config_2.txt"
 
 class DataRead:
-    def __init__(self):
+    def __init__(self, data_fname, config_fname):
         self.dconf = DataConfig(config_fname)
         # quantity of blocks
         self.block_num = os.path.getsize(data_fname) // self.dconf.packet_length
-        
+
     def get_vars(self, df, block_num):
         _data_type = {1:'B', 2:'H', 4:'I'}
         for i in range(block_num):
@@ -54,4 +52,3 @@ class DataRead:
                     variables.update({s: v})
                 index = index + item[1] * item[2]
             yield variables
-            

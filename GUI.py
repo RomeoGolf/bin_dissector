@@ -140,7 +140,7 @@ class Application(tk.Frame):
                 self.l_data['text'] = self.data_file_name
 
     def open_data(self):
-        self.dr = DataRead()
+        self.dr = DataRead(self.data_file_name, self.config_file_name)
         self.l_packets["text"] = '%d' % self.dr.block_num
 
     def set_stop(self):
@@ -153,7 +153,7 @@ class Application(tk.Frame):
             skip_e = int(self.str_skip_e.get())
 
         t1 = time.perf_counter()
-        data_file = open(data_fname, "rb")
+        data_file = open(self.data_file_name, "rb")
         if self.is_use_skip.get() == 1:
             data_file.seek(self.dr.dconf.packet_length * skip_b)
         lHi = []
