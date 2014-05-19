@@ -112,6 +112,7 @@ class Application(tk.Frame):
         print('Block quantity = %d' % self.dr.block_num)
 
     def process_data(self):
+        self.bt_process["state"] = 'disabled'
         print('Start...')
         t1 = time.perf_counter()
         data_file = open(data_fname, "rb")
@@ -148,6 +149,7 @@ class Application(tk.Frame):
         Mins = (t2/60) % 60
         Hrs = (t2/3600) % 60
         print('Stop! Elapsed time is %d h %d min %f s' % (Hrs, Mins, Secs))
+        self.bt_process["state"] = 'normal'
 
 root = tk.Tk()
 app = Application(master=root)
