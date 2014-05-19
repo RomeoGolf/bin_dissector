@@ -1,21 +1,5 @@
-#-------------------------------------------------------------------------------
-# Name:
-# Purpose:
-#
-# Author:      GordonRV
-#
-# Created:     14.11.2013
-# Copyright:   (c) GordonRV 2013
-#-------------------------------------------------------------------------------
-
-#def main():
-#    pass
-#
-#if __name__ == '__main__':
-#    main()
 
 
-#import data_config
 from data_config import *
 
 import struct
