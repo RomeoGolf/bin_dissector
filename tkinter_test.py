@@ -1,4 +1,6 @@
 
+from data_read import *
+
 import tkinter as tk
 from tkinter import Tk, ttk, tix, Frame, Label, filedialog
 import configparser
@@ -6,6 +8,9 @@ import configparser
 ini_file = 'setting.ini'
 config = configparser.ConfigParser()
 config.read(ini_file)
+
+skip = 7000
+endskip = 5000
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -60,9 +65,14 @@ class Application(tk.Frame):
 
         self.bt_open = tk.Button(self)
         self.bt_open["text"] = "Open"
-        #self.bt_open["command"] =
+        self.bt_open["command"] = self.open_data
         self.bt_open.pack(pady=5)
 
+        self.bt_process = tk.Button(self)
+        self.bt_process["text"] = "Process"
+        self.bt_process["command"] = self.process_data
+        self.bt_process.pack(pady=5)
+        
         self.QUIT = tk.Button(self, text="QUIT", fg="red",
                                             command=root.destroy)
         self.QUIT.pack(side="bottom")
@@ -86,7 +96,47 @@ class Application(tk.Frame):
             else:
                 self.data_file = fname
                 self.l_data['text'] = self.data_file
+                
+    def open_data(self):
+        self.dr = DataRead()
+        print('Block quantity = %d' % self.dr.block_num)
+        
+    def process_data(self):
+        print('Start...')
+        t1 = time.perf_counter()
+        data_file = open(data_fname, "rb")
+        data_file.seek(self.dr.dconf.packet_length * skip)
+        lHi = []
+        fig = plt.figure()
+        plt.ion()
+        x = range(60)
+        y = [1 for i in x]
+        y[0] = 20000
+        line1, = plb.plot(x, y)
+        line2, = plb.plot(x, y)
+        for i in self.dr.get_vars(data_file, self.dr.block_num - skip - endskip):
+            res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
+                                      i['Diapazon'], i['Srez'])
+            lHi.append(i['Hi'] / 8)
+            if len(line1.get_xdata()) != i['Num_Swr']:
+                line1.set_xdata(range(i['Num_Swr']))
+                line2.set_xdata(range(i['Num_Swr']))
+                line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
 
+            line1.set_ydata(res)
+            line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
+            plt.draw()
+            fig.canvas.flush_events()
+            if (i['Npack_'] % 100) == 0:
+                print(i["Npack_"])
+        plt.close()
+
+        data_file.close()
+        t2 = time.perf_counter() - t1
+        Secs = t2 % 60
+        Mins = (t2/60) % 60
+        Hrs = (t2/3600) % 60
+        print('Stop! Elapsed time is %d h %d min %f s' % (Hrs, Mins, Secs))
 
 root = tk.Tk()
 app = Application(master=root)
