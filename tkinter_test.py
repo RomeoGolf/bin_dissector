@@ -110,8 +110,7 @@ class Application(tk.Frame):
 
         self.pb = tk.ttk.Progressbar(self, maximum = 10, )
         self.pb.pack(fill = 'x', expand = 1, pady = 5)
-        #self.pb["maximum"] = 5
-        self.pb.config(maximum=5)
+        self.pb["maximum"] = 5      #self.pb.config(maximum=5)
 
     def get_fname(self, what_file):
         if what_file == 'config':
@@ -150,6 +149,8 @@ class Application(tk.Frame):
         y[0] = 20000
         line1, = plb.plot(x, y)
         line2, = plb.plot(x, y)
+        self.pb["maximum"] = self.dr.block_num - skip - endskip
+        self.pb["value"] = 0
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip - endskip):
             if self.stop:
                 self.stop = False
@@ -169,6 +170,8 @@ class Application(tk.Frame):
             self.l_packet["text"] = str(i["Npack_"])
             #if (i['Npack_'] % 100) == 0:
             #    print(i["Npack_"])
+
+            self.pb.step()
         plt.close()
 
         data_file.close()
