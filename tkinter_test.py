@@ -5,10 +5,6 @@ import tkinter as tk
 from tkinter import Tk, ttk, tix, Frame, Label, filedialog
 import configparser
 
-
-skip = 7000
-endskip = 5000
-
 class Application(tk.Frame):
 
     def __init__(self, master=None):
@@ -42,8 +38,20 @@ class Application(tk.Frame):
             self.data_file = ''
 
         self.is_show_graph = tk.IntVar()
+        self.is_use_skip = tk.IntVar()
+        self.str_skip_b = tk.StringVar()
+        self.str_skip_e = tk.StringVar()
+        self.str_skip_b.set("0")
+        self.str_skip_e.set("0")
         if self.config.has_option('OPTIONS', 'graph'):
             self.is_show_graph.set(self.config.getint('OPTIONS', 'graph'))
+        if self.config.has_option('OPTIONS', 'use_skip'):
+            self.is_use_skip.set(self.config.getint('OPTIONS', 'use_skip'))
+        if self.config.has_option('OPTIONS', 'skip_begin'):
+            self.str_skip_b.set(self.config.getint('OPTIONS', 'skip_begin'))
+        if self.config.has_option('OPTIONS', 'skip_end'):
+            self.str_skip_e.set(self.config.getint('OPTIONS', 'skip_end'))
+
 
         g_files = ttk.LabelFrame(self, text = "Files", padding = 5)
         g_files.pack(fill = 'x', expand = 1)
@@ -64,6 +72,15 @@ class Application(tk.Frame):
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
         tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
+        g_skip = ttk.Frame(g_options)
+        g_skip.pack(fill = 'x', expand = 1, ipadx = 5)
+        tk.Checkbutton(g_skip, text = 'Use skip', variable = self.is_use_skip).pack(side = 'left')
+        Label(g_skip, text = "from begin=").pack(side = 'left')
+        e_skip_b = ttk.Entry(g_skip, textvariable = self.str_skip_b)
+        e_skip_b.pack(side = 'left')
+        Label(g_skip, text = ", to end=").pack(side = 'left')
+        e_skip_e = ttk.Entry(g_skip, textvariable = self.str_skip_e)
+        e_skip_e.pack(side = 'left')
 
         g_info = ttk.LabelFrame(self, text = "Info", padding = 5)
         g_info.pack(fill = 'x', expand = 1)
@@ -137,9 +154,14 @@ class Application(tk.Frame):
     def process_data(self):
         self.bt_process["state"] = 'disabled'
         print('Start...')
+        if self.is_use_skip.get() == 1:
+            skip_b = int(self.str_skip_b.get())
+            skip_e = int(self.str_skip_e.get())
+
         t1 = time.perf_counter()
         data_file = open(data_fname, "rb")
-        data_file.seek(self.dr.dconf.packet_length * skip)
+        if self.is_use_skip.get() == 1:
+            data_file.seek(self.dr.dconf.packet_length * skip_b)
         lHi = []
         fig = plt.figure()
         plt.ion()
@@ -148,9 +170,14 @@ class Application(tk.Frame):
         y[0] = 20000
         line1, = plb.plot(x, y)
         line2, = plb.plot(x, y)
-        self.pb["maximum"] = self.dr.block_num - skip - endskip
+
+        skip = 0
+        if self.is_use_skip.get() == 1:
+            skip = skip_b + skip_e
+        self.pb["maximum"] = self.dr.block_num - skip
         self.pb["value"] = 0
-        for i in self.dr.get_vars(data_file, self.dr.block_num - skip - endskip):
+
+        for i in self.dr.get_vars(data_file, self.dr.block_num - skip):
             if self.stop:
                 self.stop = False
                 break
@@ -199,6 +226,12 @@ class Application(tk.Frame):
         if not self.config.has_section('OPTIONS'):
             self.config.add_section('OPTIONS')
         self.config.set('OPTIONS', 'graph', str(self.is_show_graph.get()))
+        self.config.set('OPTIONS', 'use_skip', str(self.is_use_skip.get()))
+        self.config.set('OPTIONS', 'skip_begin', self.str_skip_b.get())
+        self.config.set('OPTIONS', 'skip_end', self.str_skip_e.get())
+
+
+
         with open(self.ini_file, 'w') as configfile:
             self.config.write(configfile)
 
