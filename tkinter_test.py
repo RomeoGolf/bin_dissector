@@ -191,6 +191,8 @@ class Application(tk.Frame):
                 Mins = (t_remained/60) % 60
                 Hrs = (t_remained/3600) % 60
                 self.l_rem_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
+            self.update()
+
         plt.close()
 
         data_file.close()
