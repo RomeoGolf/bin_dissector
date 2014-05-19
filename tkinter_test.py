@@ -15,6 +15,7 @@ class Application(tk.Frame):
         self.ini_file = 'setting.ini'
         self.config = configparser.ConfigParser()
         self.config.read(self.ini_file)
+        self.stop = False
 
         tk.Frame.__init__(self, master)
         self.pack()
@@ -85,6 +86,11 @@ class Application(tk.Frame):
         self.bt_process["command"] = self.process_data
         self.bt_process.pack(pady = 5)
 
+        self.bt_stop = tk.Button(self)
+        self.bt_stop["text"] = "Stop"
+        self.bt_stop["command"] = self.set_stop
+        self.bt_stop.pack(pady = 5)
+
         self.QUIT = tk.Button(self, text="QUIT", fg="red",
                                             command=root.destroy)
         self.QUIT.pack(side="bottom", pady = 5)
@@ -113,6 +119,9 @@ class Application(tk.Frame):
         self.dr = DataRead()
         print('Block quantity = %d' % self.dr.block_num)
 
+    def set_stop(self):
+        self.stop = True
+
     def process_data(self):
         self.bt_process["state"] = 'disabled'
         print('Start...')
@@ -128,6 +137,9 @@ class Application(tk.Frame):
         line1, = plb.plot(x, y)
         line2, = plb.plot(x, y)
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip - endskip):
+            if self.stop:
+                self.stop = False
+                break
             res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
                                       i['Diapazon'], i['Srez'])
             lHi.append(i['Hi'] / 8)
