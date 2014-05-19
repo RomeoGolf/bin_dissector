@@ -172,6 +172,24 @@ class Application(tk.Frame):
             #    print(i["Npack_"])
 
             self.pb.step()
+            if self.pb["value"] > 0:
+                t2 = time.perf_counter() - t1
+                Secs = t2 % 60
+                Mins = (t2/60) % 60
+                Hrs = (t2/3600) % 60
+                self.l_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
+
+                t_expected = (t2 / self.pb["value"]) * self.pb["maximum"]
+                Secs = t_expected % 60
+                Mins = (t_expected/60) % 60
+                Hrs = (t_expected/3600) % 60
+                self.l_exp_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
+
+                t_remained = t_expected - t2
+                Secs = t_remained % 60
+                Mins = (t_remained/60) % 60
+                Hrs = (t_remained/3600) % 60
+                self.l_rem_time["text"] = '%.2d:%.2d:%.2d' % (Hrs, Mins, Secs)
         plt.close()
 
         data_file.close()
