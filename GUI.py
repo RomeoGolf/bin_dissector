@@ -34,6 +34,7 @@ class Application(tk.Frame):
         else:
             self.data_file_name = ''
 
+        # binded variables preparing
         self.is_show_graph = tk.IntVar()
         self.is_use_skip = tk.IntVar()
         self.str_skip_b = tk.StringVar()
@@ -49,6 +50,7 @@ class Application(tk.Frame):
         if self.config.has_option('OPTIONS', 'skip_end'):
             self.str_skip_e.set(self.config.getint('OPTIONS', 'skip_end'))
 
+        # Files group
         g_files = ttk.LabelFrame(self, text = "Files", padding = 5)
         g_files.pack(fill = 'x', expand = 1)
         Label(g_files, text = 'config: ').grid(row = 0)
@@ -65,6 +67,7 @@ class Application(tk.Frame):
         self.bt_config['command'] = lambda : self.get_fname('config')
         self.bt_data['command'] = lambda : self.get_fname('data')
 
+        # Options group
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
         tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
@@ -78,6 +81,7 @@ class Application(tk.Frame):
         e_skip_e = ttk.Entry(g_skip, textvariable = self.str_skip_e)
         e_skip_e.pack(side = 'left')
 
+        # Info group
         g_info = ttk.LabelFrame(self, text = "Info", padding = 5)
         g_info.pack(fill = 'x', expand = 1)
 
@@ -101,6 +105,7 @@ class Application(tk.Frame):
         self.l_exp_time = Label(g_info, text = '-')
         self.l_exp_time.grid(row = 4, column = 1)
 
+        # Buttons
         self.bt_open = tk.Button(self)
         self.bt_open["text"] = "Open"
         self.bt_open["command"] = self.open_data
@@ -116,8 +121,7 @@ class Application(tk.Frame):
         self.bt_stop["command"] = self.set_stop
         self.bt_stop.pack(pady = 5)
 
-        self.QUIT = tk.Button(self, text="QUIT", fg="red",
-                                            command=root.destroy)
+        self.QUIT = tk.Button(self, text="QUIT", fg="red", command=root.destroy)
         self.QUIT.pack(side="bottom", pady = 5)
 
         self.pb = tk.ttk.Progressbar(self, maximum = 10, )
@@ -148,15 +152,18 @@ class Application(tk.Frame):
 
     def process_data(self):
         self.bt_process["state"] = 'disabled'
+
+        # get skip values
         if self.is_use_skip.get() == 1:
             skip_b = int(self.str_skip_b.get())
             skip_e = int(self.str_skip_e.get())
 
-        t1 = time.perf_counter()
+        t1 = time.perf_counter()    # for timer
         data_file = open(self.data_file_name, "rb")
         if self.is_use_skip.get() == 1:
             data_file.seek(self.dr.dconf.packet_length * skip_b)
-        lHi = []
+
+        # Chart preparing
         fig = plt.figure()
         plt.ion()
         x = range(60)
@@ -165,16 +172,19 @@ class Application(tk.Frame):
         line1, = plb.plot(x, y)
         line2, = plb.plot(x, y)
 
+        # skip count
         skip = 0
         if self.is_use_skip.get() == 1:
             skip = skip_b + skip_e
         self.pb["maximum"] = self.dr.block_num - skip
         self.pb["value"] = 0
 
+        # data processing loop
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip):
             if self.stop:
                 self.stop = False
                 break
+            # ============== Data processing and indication here ===============
             res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
                                       i['Diapazon'], i['Srez'])
             if self.is_show_graph.get() == 1:
@@ -188,7 +198,8 @@ class Application(tk.Frame):
                 plt.draw()
                 fig.canvas.flush_events()
             self.l_packet["text"] = str(i["Npack_"])
-
+            # ==================================================================
+            # progress bar and timer
             self.pb.step()
             if self.pb["value"] > 0:
                 t2 = time.perf_counter() - t1
