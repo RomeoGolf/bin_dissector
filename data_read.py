@@ -30,8 +30,9 @@ class DataRead:
                     variables.update({s: v})
                 else:               # array
                     s1 = "<%d%s" % (item[2], _data_type[item[1]])
-                    p = packet[index:(index+item[1]*item[2])]
-                    v = np.asarray(struct.unpack(s1, p))
+                    # <: little-endian, H: unsigned short, I: u int, B: u byte
+                    p = packet[index:(index+item[1]*item[2])] # get raw array
+                    v = np.asarray(struct.unpack(s1, p)) # convert to numpy arr
                     variables.update({s: v})
                 index = index + item[1] * item[2]
             yield variables
