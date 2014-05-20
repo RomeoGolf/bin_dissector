@@ -22,7 +22,8 @@ def get_swertka(CodNonius, Num_Swr, Num_Div, Diapazon, Srez):
     _srez = np.flipud(_srez.reshape(4, maxx//4, order='F'))
     _srez = _srez.reshape(1, maxx, order='F')
 
-    Sz = _srez.reshape(Num_Swr//(_gr_non // 2), _gr_non, maxx // (Num_Swr * 2), order='F')
+    Sz = _srez.reshape(Num_Swr//(_gr_non // 2),
+                                    _gr_non, maxx // (Num_Swr * 2), order='F')
 
     Szs = np.zeros(Num_Swr * Num_Div)
     Szc = np.zeros(Num_Swr * Num_Div)
@@ -51,7 +52,8 @@ def get_swertka(CodNonius, Num_Swr, Num_Div, Diapazon, Srez):
             j = j + 1;
         Szs[k * Num_Swr : k*Num_Swr + Num_Swr] = Sz_buf
 
-    Signal = np.sqrt((np.square(Szc - np.mean(Szc))) + (np.square(Szs - np.mean(Szs))))
+    Signal = np.sqrt((np.square(Szc - np.mean(Szc))) +
+                                        (np.square(Szs - np.mean(Szs))))
 
     s1 = Szs.reshape(Num_Swr, Num_Div, order='F')
     c1 = Szc.reshape(Num_Swr, Num_Div, order='F')

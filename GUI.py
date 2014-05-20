@@ -69,10 +69,12 @@ class Application(tk.Frame):
         # Options group
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
-        tk.Checkbutton(g_options, text = 'Show graph', variable = self.is_show_graph).pack()
+        tk.Checkbutton(g_options, text = 'Show graph',
+                                    variable = self.is_show_graph).pack()
         g_skip = ttk.Frame(g_options)
         g_skip.pack(fill = 'x', expand = 1, ipadx = 5)
-        tk.Checkbutton(g_skip, text = 'Use skip', variable = self.is_use_skip).pack(side = 'left')
+        tk.Checkbutton(g_skip, text = 'Use skip',
+                            variable = self.is_use_skip).pack(side = 'left')
         Label(g_skip, text = "from begin=").pack(side = 'left')
         e_skip_b = ttk.Entry(g_skip, textvariable = self.str_skip_b)
         e_skip_b.pack(side = 'left')
@@ -184,8 +186,8 @@ class Application(tk.Frame):
                 self.stop = False
                 break
             # ============== Data processing and indication here ===============
-            res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'], i['Num_Div'],
-                                      i['Diapazon'], i['Srez'])
+            res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'],
+                                      i['Num_Div'], i['Diapazon'], i['Srez'])
             if self.is_show_graph.get() == 1:
                 if len(line1.get_xdata()) != i['Num_Swr']:
                     line1.set_xdata(range(i['Num_Swr']))
