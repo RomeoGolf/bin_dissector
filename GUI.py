@@ -32,6 +32,10 @@ class Application(tk.Frame):
             self.data_file_name = self.config.get('FILES', 'data')
         else:
             self.data_file_name = ''
+        if self.config.has_option('FILES', 'result'):
+            self.result_file_name = self.config.get('FILES', 'result')
+        else:
+            self.result_file_name = ''
 
         # binded variables preparing
         self.is_show_graph = tk.IntVar()
@@ -65,6 +69,13 @@ class Application(tk.Frame):
         self.bt_data.grid(row = 1, column = 2)
         self.bt_config['command'] = lambda : self.get_fname('config')
         self.bt_data['command'] = lambda : self.get_fname('data')
+
+        Label(g_files, text = 'result: ').grid(row = 2)
+        self.l_result = Label(g_files, text = self.result_file_name)
+        self.l_result.grid(row = 2, column = 1)
+        self.bt_result = tk.Button(g_files, text = 'select...')
+        self.bt_result.grid(row = 2, column = 2)
+        self.bt_result['command'] = self.get_result_fname
 
         # Options group
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
@@ -143,6 +154,13 @@ class Application(tk.Frame):
             else:
                 self.data_file_name = fname
                 self.l_data['text'] = self.data_file_name
+
+    def get_result_fname(self):
+        ftypes = [('text files', '*.txt'), ('All files', '*')]
+        dlg = tk.filedialog.SaveAs(self, filetypes = ftypes)
+        fname = dlg.show()
+        self.result_file_name = fname
+        self.l_result['text'] = self.result_file_name
 
     def open_data(self):
         self.dr = DataRead(self.data_file_name, self.config_file_name)
@@ -226,6 +244,7 @@ class Application(tk.Frame):
             self.config.add_section('FILES')
         self.config.set('FILES', 'config', self.config_file_name)
         self.config.set('FILES', 'data', self.data_file_name)
+        self.config.set('FILES', 'result', self.result_file_name)
         if not self.config.has_section('OPTIONS'):
             self.config.add_section('OPTIONS')
         self.config.set('OPTIONS', 'graph', str(self.is_show_graph.get()))
