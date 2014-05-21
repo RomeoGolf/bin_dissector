@@ -178,9 +178,6 @@ class Application(tk.Frame):
             skip_e = int(self.str_skip_e.get())
 
         t1 = time.perf_counter()    # for timer
-        data_file = open(self.data_file_name, "rb")
-        if self.is_use_skip.get() == 1:
-            data_file.seek(self.dr.dconf.packet_length * skip_b)
 
         # Chart preparing
         fig = plt.figure()
@@ -198,6 +195,22 @@ class Application(tk.Frame):
         self.pb["maximum"] = self.dr.block_num - skip
         self.pb["value"] = 0
 
+        # open data file
+        data_file = open(self.data_file_name, "rb")
+        # get time of first block
+        self.start_time = self.dr.get_vars(data_file, 1).__next__()['Sys_t_']
+        data_file.seek(0)
+        if self.is_use_skip.get() == 1:
+            data_file.seek(self.dr.dconf.packet_length * skip_b)
+        # open result file
+        result_file = open(self.result_file_name, "w", 1)
+
+        # assembling data names to out
+        out_vars = ("Time", "var1", "var2")
+        # write the header to the result file
+        res_header = '\t'.join(out_vars)
+        result_file.writelines('{}{}'.format(res_header, '\n'))
+
         # data processing loop
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip):
             if self.stop:
@@ -206,6 +219,17 @@ class Application(tk.Frame):
             # ============== Data processing and indication here ===============
             res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'],
                                       i['Num_Div'], i['Diapazon'], i['Srez'])
+
+            # Sys_t_all(end + 1) = fix(Sys_t_ - Sys_t_0)*244.15e-6 + dT;
+            curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6
+            out_data = {}
+            out_data.update({"Time": '%f' % curr_t})
+            out_data.update({"var1": '%f' % (i['Hi'] / 8 - 32)})
+            out_data.update({"var2": '%d' % i['Sys_t_']})
+
+            out_data_str = [out_data[ind] for ind in out_vars]
+            result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
+
             if self.is_show_graph.get() == 1:
                 if len(line1.get_xdata()) != i['Num_Swr']:
                     line1.set_xdata(range(i['Num_Swr']))
@@ -231,6 +255,7 @@ class Application(tk.Frame):
 
         plt.close()
         data_file.close()
+        result_file.close()
         self.bt_process["state"] = 'normal'
 
     def time_to_text(self, t):
