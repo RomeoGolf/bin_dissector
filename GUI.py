@@ -300,6 +300,8 @@ class Application(tk.Frame):
             for var in self.sel_var_list.keys():
                 if list(i.keys()).count(var) > 0:
                     self.sel_var_list[var]["text"] = str(i[var])
+                if list(out_data.keys()).count(var) > 0:
+                    self.sel_var_list[var]["text"] = str(out_data[var])
             # ==================================================================
             # progress bar and timer
             self.pb.step()
