@@ -305,6 +305,15 @@ class Application(tk.Frame):
             #    fig.canvas.flush_events()
 
             if self.is_show_graph.get() == 1:
+                if len(line1.get_xdata()) != len(i['AKFW_0']):
+                    line1.set_xdata(range(len(i['AKFW_0'])))
+                    line2.set_xdata(range(len(i['AKFW_PI'])))
+                    line1.get_axes().axis([0, len(i['AKFW_0']), -10000, 10000])
+
+                line1.set_ydata(i['AKFW_0'])
+                line2.set_ydata(i['AKFW_PI'])
+                #plt.draw()
+                fig.canvas.draw()
                 fig.canvas.flush_events()
             self.l_packet["text"] = str(i["Npack_"])
 
