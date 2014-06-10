@@ -4,6 +4,8 @@ from data_read import *
 import tkinter as tk
 from tkinter import Tk, ttk, tix, Frame, Label, filedialog
 import configparser
+from collections import deque
+
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -17,6 +19,9 @@ class Application(tk.Frame):
         self.createWidgets()
         self.setWindowPosition()
         self.master.bind("<Configure>", self.save_geometry)
+
+        self.time_queue = deque([])
+        self.time_queue_max = 100
 
     def setWindowPosition(self):
         if self.config.has_option('POS', 'geom'):
@@ -306,12 +311,22 @@ class Application(tk.Frame):
             # progress bar and timer
             self.pb.step()
             if self.pb["value"] > 0:
-                t2 = time.perf_counter() - t1
+                now_t = time.perf_counter()
+                self.time_queue.append(now_t)
+                if len(self.time_queue) > self.time_queue_max:
+                    self.time_queue.popleft()
+                t_aver = (now_t - self.time_queue[0]) / len(self.time_queue)
+
+                t2 = now_t - t1
                 self.l_time["text"] = self.time_to_text(t2)
-                t_expected = (t2 / self.pb["value"]) * self.pb["maximum"]
+                #t_expected = (t2 / self.pb["value"]) * self.pb["maximum"]
+                t_expected = (t_aver) * self.pb["maximum"]
                 self.l_exp_time["text"] = self.time_to_text(t_expected)
-                t_remained = t_expected - t2
+                #t_remained = t_expected - t2
+                #self.l_rem_time["text"] = self.time_to_text(t_remained)
+                t_remained = t_aver * (self.pb["maximum"] - self.pb["value"])
                 self.l_rem_time["text"] = self.time_to_text(t_remained)
+
             self.update()
 
         plt.close()
