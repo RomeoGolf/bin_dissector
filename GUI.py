@@ -37,6 +37,11 @@ class Application(tk.Frame):
         else:
             self.result_file_name = ''
 
+        self.ini_var = []
+        if self.config.has_section('SELVAR'):
+            ini_var_opt = self.config.options('SELVAR')
+            self.ini_var = [self.config.get('SELVAR', opt) for opt in self.config.options('SELVAR')]
+
         # binded variables preparing
         self.is_show_graph = tk.IntVar()
         self.is_use_skip = tk.IntVar()
@@ -136,6 +141,8 @@ class Application(tk.Frame):
         self.cbSelVar.grid(row = 0, column = 3)
         self.btAddVarInfo = tk.Button(g_sel_var, text = '+', command = self.add_var_info)
         self.btAddVarInfo.grid(row = 0, column = 4)
+        for var_name in self.ini_var:
+            self.create_var_info_frame(var_name)
 
         # Buttons
         self.bt_open = tk.Button(self)
@@ -196,17 +203,20 @@ class Application(tk.Frame):
     def add_var_info(self):
         var_name = self.varSelVar.get()
         if list(self.sel_var_list.keys()).count(var_name) == 0:
-            _g_ = ttk.Frame(self.g_vars)
-            _g_.pack(anchor = 'ne')
-            _l_ = tk.Label(_g_, text = '{} = '.format(var_name))
-            _l_.grid(row = 0, column = 0)
-            _l_data = tk.Label(_g_, text = '-')
-            _l_data.grid(row = 0, column = 1)
-            _b_ = tk.Button(_g_, text = 'x')
-            _b_.grid(row = 0, column = 2)
-            _b_['command'] = lambda : self.del_sel_var(var_name)
-            self.sel_var_list.update({var_name:_l_data})
-            self.sel_varframe_list.update({var_name:_g_})
+            self.create_var_info_frame(var_name)
+
+    def create_var_info_frame(self, name):
+         _g_ = ttk.Frame(self.g_vars)
+         _g_.pack(anchor = 'ne')
+         _l_ = tk.Label(_g_, text = '{} = '.format(name))
+         _l_.grid(row = 0, column = 0)
+         _l_data = tk.Label(_g_, text = '-')
+         _l_data.grid(row = 0, column = 1)
+         _b_ = tk.Button(_g_, text = 'x')
+         _b_.grid(row = 0, column = 2)
+         _b_['command'] = lambda : self.del_sel_var(name)
+         self.sel_var_list.update({name:_l_data})
+         self.sel_varframe_list.update({name:_g_})
 
     def del_sel_var(self, name):
         _g_ = self.sel_varframe_list[name]
@@ -325,6 +335,14 @@ class Application(tk.Frame):
         self.config.set('OPTIONS', 'use_skip', str(self.is_use_skip.get()))
         self.config.set('OPTIONS', 'skip_begin', self.str_skip_b.get())
         self.config.set('OPTIONS', 'skip_end', self.str_skip_e.get())
+
+        if self.config.has_section('SELVAR'):
+            if len(self.config.options('SELVAR')) > 0:
+                self.config.remove_section('SELVAR')
+        if not self.config.has_section('SELVAR'):
+            self.config.add_section('SELVAR')
+        for var in self.sel_var_list.keys():
+            self.config.set('SELVAR', var, var)
 
         with open(self.ini_file, 'w') as configfile:
             self.config.write(configfile)
