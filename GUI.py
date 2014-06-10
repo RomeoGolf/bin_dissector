@@ -268,7 +268,7 @@ class Application(tk.Frame):
         result_file = open(self.result_file_name, "w", 1)
 
         # assembling data names to out
-        out_vars = ("Time", "var1", "var2")
+        out_vars = ("Time", "Hi", "Sys_t")
         # write the header to the result file
         res_header = '\t'.join(out_vars)
         result_file.writelines('{}{}'.format(res_header, '\n'))
@@ -286,8 +286,8 @@ class Application(tk.Frame):
             curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6
             out_data = {}
             out_data.update({"Time": '%f' % curr_t})
-            out_data.update({"var1": '%f' % (i['Hi'] / 8 - 32)})
-            out_data.update({"var2": '%d' % i['Sys_t_']})
+            out_data.update({"Hi": '%f' % (i['Hi'] / 8 - 32)})
+            out_data.update({"Sys_t": '%d' % i['Sys_t_']})
 
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
