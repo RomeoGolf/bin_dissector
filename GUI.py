@@ -52,6 +52,11 @@ class Application(tk.Frame):
             self.str_skip_b.set(self.config.getint('OPTIONS', 'skip_begin'))
         if self.config.has_option('OPTIONS', 'skip_end'):
             self.str_skip_e.set(self.config.getint('OPTIONS', 'skip_end'))
+        # for variable selecting
+        self.varSelVar = tk.StringVar(self)
+        self.varSelVar.set("---")
+
+        self.sel_var_list = {}
 
         # Files group
         g_files = ttk.LabelFrame(self, text = "Files", padding = 5)
@@ -94,28 +99,42 @@ class Application(tk.Frame):
         e_skip_e.pack(side = 'left')
 
         # Info group
-        g_info = ttk.LabelFrame(self, text = "Info", padding = 5)
+        g_info = ttk.LabelFrame(self, text = "Info")
         g_info.pack(fill = 'x', expand = 1)
 
-        Label(g_info, text = 'packets: ').grid(row = 0)
-        self.l_packets = Label(g_info, text = '-')
+        g_time_info = ttk.Frame(g_info)
+        g_time_info.pack(anchor = 'ne', fill = 'x', side = 'left', padx = 10)
+
+        g_sel_var = ttk.Frame(g_info)
+        g_sel_var.pack(anchor = 'ne', fill = 'x', side = 'left', padx = 10)
+
+        self.g_vars = ttk.Frame(g_info)
+        self.g_vars.pack(anchor = 'ne', fill = 'x', side = 'left', padx = 10)
+
+        Label(g_time_info, text = 'packets: ').grid(row = 0)
+        self.l_packets = Label(g_time_info, text = '-')
         self.l_packets.grid(row = 0, column = 1)
 
-        Label(g_info, text = 'packet #: ').grid(row = 1)
-        self.l_packet = Label(g_info, text = '0')
+        Label(g_time_info, text = 'packet #: ').grid(row = 1)
+        self.l_packet = Label(g_time_info, text = '0')
         self.l_packet.grid(row = 1, column = 1)
 
-        Label(g_info, text = 'Elapsed time: ').grid(row = 2)
-        self.l_time = Label(g_info, text = '-')
+        Label(g_time_info, text = 'Elapsed time: ').grid(row = 2)
+        self.l_time = Label(g_time_info, text = '-')
         self.l_time.grid(row = 2, column = 1)
 
-        Label(g_info, text = 'Remained time: ').grid(row = 3)
-        self.l_rem_time = Label(g_info, text = '-')
+        Label(g_time_info, text = 'Remained time: ').grid(row = 3)
+        self.l_rem_time = Label(g_time_info, text = '-')
         self.l_rem_time.grid(row = 3, column = 1)
 
-        Label(g_info, text = 'Expected time: ').grid(row = 4)
-        self.l_exp_time = Label(g_info, text = '-')
+        Label(g_time_info, text = 'Expected time: ').grid(row = 4)
+        self.l_exp_time = Label(g_time_info, text = '-')
         self.l_exp_time.grid(row = 4, column = 1)
+
+        self.cbSelVar = tk.ttk.Combobox(g_sel_var, textvariable = self.varSelVar)
+        self.cbSelVar.grid(row = 0, column = 3)
+        self.btAddVarInfo = tk.Button(g_sel_var, text = '+', command = self.add_var_info)
+        self.btAddVarInfo.grid(row = 0, column = 4)
 
         # Buttons
         self.bt_open = tk.Button(self)
@@ -166,8 +185,25 @@ class Application(tk.Frame):
         self.dr = DataRead(self.data_file_name, self.config_file_name)
         self.l_packets["text"] = '%d' % self.dr.block_num
 
+        options = tuple([opt[0] for opt in self.dr.dconf.config if opt[2] == 1])
+        self.varSelVar.set(options[0])
+        self.cbSelVar['values'] = options
+
     def set_stop(self):
         self.stop = True
+
+    def add_var_info(self):
+        var_name = self.varSelVar.get()
+        if list(self.sel_var_list.keys()).count(var_name) == 0:
+            _g_ = ttk.Frame(self.g_vars)
+            _g_.pack(anchor = 'ne')
+            _l_ = tk.Label(_g_, text = '{} = '.format(var_name))
+            _l_.grid(row = 0, column = 0)
+            _l_data = tk.Label(_g_, text = '-')
+            _l_data.grid(row = 0, column = 1)
+            _b_ = tk.Button(_g_, text = 'x')
+            _b_.grid(row = 0, column = 2)
+            self.sel_var_list.update({var_name:_l_data})
 
     def process_data(self):
         self.bt_process["state"] = 'disabled'
@@ -241,6 +277,10 @@ class Application(tk.Frame):
                 plt.draw()
                 fig.canvas.flush_events()
             self.l_packet["text"] = str(i["Npack_"])
+
+            for var in self.sel_var_list.keys():
+                if list(i.keys()).count(var) > 0:
+                    self.sel_var_list[var]["text"] = str(i[var])
             # ==================================================================
             # progress bar and timer
             self.pb.step()
