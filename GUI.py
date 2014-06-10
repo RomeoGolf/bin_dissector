@@ -246,9 +246,13 @@ class Application(tk.Frame):
         plt.ion()
         x = range(60)
         y = [1 for i in x]
-        y[0] = 20000
+        y[0] = 0000
         line1, = plt.plot(x, y, figure = fig)
         line2, = plt.plot(x, y, figure = fig)
+
+        fig_var = plt.figure()
+        plt.ion()
+        line_v, = plb.plot(x, y, figure = fig_var)
 
         # skip count
         skip = 0
@@ -273,6 +277,8 @@ class Application(tk.Frame):
         res_header = '\t'.join(out_vars)
         result_file.writelines('{}{}'.format(res_header, '\n'))
 
+        hi_ = []
+
         # data processing loop
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip):
             if self.stop:
@@ -289,6 +295,8 @@ class Application(tk.Frame):
             out_data.update({"Time": '%f' % curr_t})
             out_data.update({"Hi": '%f' % (i['Hi'] / 8 - 32)})
             out_data.update({"Sys_t": '%d' % i['Sys_t_']})
+
+            hi_.append(i['Hi'] / 8 - 32)
 
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
@@ -315,6 +323,15 @@ class Application(tk.Frame):
                 #plt.draw()
                 fig.canvas.draw()
                 fig.canvas.flush_events()
+
+                if len(line_v.get_xdata()) != (len(hi_)):
+                    line_v.set_xdata(range(len(hi_)))
+                    line_v.get_axes().axis([0, len(hi_), 0, 700])
+
+                line_v.set_ydata(hi_)
+                fig_var.canvas.draw()
+                fig_var.canvas.flush_events()
+
             self.l_packet["text"] = str(i["Npack_"])
 
             for var in self.sel_var_list.keys():
@@ -345,6 +362,9 @@ class Application(tk.Frame):
             self.update()
 
         plt.close(fig)
+        plt.close(fig_var)
+
+
         data_file.close()
         result_file.close()
         self.bt_process["state"] = 'normal'
