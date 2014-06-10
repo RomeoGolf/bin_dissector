@@ -247,8 +247,8 @@ class Application(tk.Frame):
         x = range(60)
         y = [1 for i in x]
         y[0] = 20000
-        line1, = plb.plot(x, y)
-        line2, = plb.plot(x, y)
+        line1, = plt.plot(x, y, figure = fig)
+        line2, = plt.plot(x, y, figure = fig)
 
         # skip count
         skip = 0
@@ -344,7 +344,7 @@ class Application(tk.Frame):
 
             self.update()
 
-        plt.close()
+        plt.close(fig)
         data_file.close()
         result_file.close()
         self.bt_process["state"] = 'normal'
