@@ -57,6 +57,7 @@ class Application(tk.Frame):
         self.varSelVar.set("---")
 
         self.sel_var_list = {}
+        self.sel_varframe_list = {}
 
         # Files group
         g_files = ttk.LabelFrame(self, text = "Files", padding = 5)
@@ -203,7 +204,15 @@ class Application(tk.Frame):
             _l_data.grid(row = 0, column = 1)
             _b_ = tk.Button(_g_, text = 'x')
             _b_.grid(row = 0, column = 2)
+            _b_['command'] = lambda : self.del_sel_var(var_name)
             self.sel_var_list.update({var_name:_l_data})
+            self.sel_varframe_list.update({var_name:_g_})
+
+    def del_sel_var(self, name):
+        _g_ = self.sel_varframe_list[name]
+        _g_.destroy()
+        del self.sel_var_list[name]
+        del self.sel_varframe_list[name]
 
     def process_data(self):
         self.bt_process["state"] = 'disabled'
