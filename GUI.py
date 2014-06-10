@@ -279,8 +279,9 @@ class Application(tk.Frame):
                 self.stop = False
                 break
             # ============== Data processing and indication here ===============
-            res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'],
-                                      i['Num_Div'], i['Diapazon'], i['Srez'])
+
+            #res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'],
+            #                          i['Num_Div'], i['Diapazon'], i['Srez'])
 
             # Sys_t_all(end + 1) = fix(Sys_t_ - Sys_t_0)*244.15e-6 + dT;
             curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6
@@ -292,15 +293,18 @@ class Application(tk.Frame):
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
-            if self.is_show_graph.get() == 1:
-                if len(line1.get_xdata()) != i['Num_Swr']:
-                    line1.set_xdata(range(i['Num_Swr']))
-                    line2.set_xdata(range(i['Num_Swr']))
-                    line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
+            #if self.is_show_graph.get() == 1:
+            #    if len(line1.get_xdata()) != i['Num_Swr']:
+            #        line1.set_xdata(range(i['Num_Swr']))
+            #        line2.set_xdata(range(i['Num_Swr']))
+            #        line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
 
-                line1.set_ydata(res)
-                line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
-                plt.draw()
+            #    line1.set_ydata(res)
+            #    line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
+            #    plt.draw()
+            #    fig.canvas.flush_events()
+
+            if self.is_show_graph.get() == 1:
                 fig.canvas.flush_events()
             self.l_packet["text"] = str(i["Npack_"])
 
