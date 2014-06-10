@@ -6,6 +6,8 @@ from tkinter import Tk, ttk, tix, Frame, Label, filedialog
 import configparser
 from collections import deque
 
+import matplotlib.pyplot as plt
+import matplotlib.pylab as plb
 
 class Application(tk.Frame):
     def __init__(self, master=None):

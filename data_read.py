@@ -3,8 +3,6 @@ from data_config import *
 
 import struct
 import os
-import matplotlib.pyplot as plt
-import matplotlib.pylab as plb
 import time
 import swertka
 import numpy as np
