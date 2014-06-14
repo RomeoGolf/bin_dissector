@@ -29,10 +29,10 @@ class Graphica():
 
     def Draw(self):
         data = q.get()
-        i = data[0]
-        hi_ = data[1]
+        i = data[2]
+        hi_ = data[3]
         #if self.is_show_graph.get() == 1:
-        if True:
+        if data[0] == 1:
             if len(self.line1.get_xdata()) != len(i['AKFW_0']):
                 self.line1.set_xdata(range(len(i['AKFW_0'])))
                 self.line2.set_xdata(range(len(i['AKFW_PI'])))
@@ -43,7 +43,7 @@ class Graphica():
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
 
-        if len(hi_) > 0:
+        if data[1] == 1:
             if len(self.line_v.get_xdata()) != (len(hi_)):
                 self.line_v.set_xdata(range(len(hi_)))
                 self.line_v.get_axes().axis([0, len(hi_), 0, max(self.line_v.get_ydata())])
@@ -95,6 +95,8 @@ class Application(tk.Frame):
 
         # binded variables preparing
         self.is_show_graph = tk.IntVar()
+        self.is_show_var_graph = tk.IntVar()
+        self.is_not_thinned = tk.IntVar()
         self.is_use_skip = tk.IntVar()
         self.str_skip_b = tk.StringVar()
         self.str_skip_e = tk.StringVar()
@@ -108,6 +110,11 @@ class Application(tk.Frame):
             self.str_skip_b.set(self.config.getint('OPTIONS', 'skip_begin'))
         if self.config.has_option('OPTIONS', 'skip_end'):
             self.str_skip_e.set(self.config.getint('OPTIONS', 'skip_end'))
+        if self.config.has_option('OPTIONS', 'var_graph'):
+            self.is_show_var_graph.set(self.config.getint('OPTIONS', 'var_graph'))
+        if self.config.has_option('OPTIONS', 'not_thinned'):
+            self.is_not_thinned.set(self.config.getint('OPTIONS', 'not_thinned'))
+
         # for variable selecting
         self.varSelVar = tk.StringVar(self)
         self.varSelVar.set("---")
@@ -142,8 +149,17 @@ class Application(tk.Frame):
         # Options group
         g_options = ttk.LabelFrame(self, text = "Options", padding = 5)
         g_options.pack(fill = 'x', expand = 1)
-        tk.Checkbutton(g_options, text = 'Show graph',
-                                    variable = self.is_show_graph).pack()
+
+        g_graph_opt = ttk.Frame(g_options)
+        g_graph_opt.pack(fill = 'x', expand = 1, ipadx = 5)
+
+        tk.Checkbutton(g_graph_opt, text = 'Show array graph',
+                                    variable = self.is_show_graph).pack(side = 'left')
+        tk.Checkbutton(g_graph_opt, text = 'Show variable graph',
+                                    variable = self.is_show_var_graph).pack(side = 'left')
+        tk.Checkbutton(g_graph_opt, text = 'Not thinning data (slowly)',
+                                    variable = self.is_not_thinned).pack(side = 'left')
+
         g_skip = ttk.Frame(g_options)
         g_skip.pack(fill = 'x', expand = 1, ipadx = 5)
         tk.Checkbutton(g_skip, text = 'Use skip',
@@ -323,7 +339,7 @@ class Application(tk.Frame):
         result_file.writelines('{}{}'.format(res_header, '\n'))
 
         hi_ = []
-        q.put([i, hi_])
+        q.put([0, 0,  i, hi_])
         pp = mp.Process(target = self.gr.Draw())
         #pp.start()
 
@@ -345,45 +361,19 @@ class Application(tk.Frame):
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
-            #if self.is_show_graph.get() == 1:
-            #    if len(line1.get_xdata()) != i['Num_Swr']:
-            #        line1.set_xdata(range(i['Num_Swr']))
-            #        line2.set_xdata(range(i['Num_Swr']))
-            #        line1.get_axes().axis([0,  i['Num_Swr'], 0, 25000])
-
-            #    line1.set_ydata(res)
-            #    line2.set_ydata(i['Swertka'][0:i['Num_Swr']])
-            #    plt.draw()
-            #    fig.canvas.flush_events()
-
-            if pp.is_alive():
-                pass
+            if self.is_not_thinned.get():
+                if self.is_show_graph.get() == 1:
+                    q.put([self.is_show_graph.get(),
+                                        self.is_show_var_graph.get(), i, hi_])
+                    self.gr.Draw()
             else:
-                q.put([i, hi_])
-                pp = mp.Process(target = self.gr.Draw())
-                pp.start()
-
-            '''if self.is_show_graph.get() == 1:
-                if len(line1.get_xdata()) != len(i['AKFW_0']):
-                    line1.set_xdata(range(len(i['AKFW_0'])))
-                    line2.set_xdata(range(len(i['AKFW_PI'])))
-                    line1.get_axes().axis([0, len(i['AKFW_0']), -10000, 10000])
-
-                line1.set_ydata(i['AKFW_0'])
-                line2.set_ydata(i['AKFW_PI'])
-                #plt.draw()
-                fig.canvas.draw()
-                fig.canvas.flush_events()
-
-                if len(line_v.get_xdata()) != (len(hi_)):
-                    line_v.set_xdata(range(len(hi_)))
-                    line_v.get_axes().axis([0, len(hi_), 0, max(line_v.get_ydata())])
-
-                line_v['ydata'][len(hi_) - 1] = out_data['Hi']
-
-                #line_v.set_ydata(hi_)
-                fig_var.canvas.draw()
-                fig_var.canvas.flush_events()'''
+                if pp.is_alive():
+                    pass
+                else:
+                    q.put([self.is_show_graph.get(),
+                                        self.is_show_var_graph.get(), i, hi_])
+                    pp = mp.Process(target = self.gr.Draw())
+                    pp.start()
 
             self.l_packet["text"] = str(i["Npack_"])
 
@@ -417,11 +407,6 @@ class Application(tk.Frame):
         #plt.close(self.gr.fig)
         #plt.close(self.gr.fig_var)
 
-
-        ''''q.put([i, hi_])
-        pp = mp.Process(target = self.gr.Draw())
-        pp.start()'''
-
         data_file.close()
         result_file.close()
         self.bt_process["state"] = 'normal'
@@ -444,6 +429,8 @@ class Application(tk.Frame):
         self.config.set('OPTIONS', 'use_skip', str(self.is_use_skip.get()))
         self.config.set('OPTIONS', 'skip_begin', self.str_skip_b.get())
         self.config.set('OPTIONS', 'skip_end', self.str_skip_e.get())
+        self.config.set('OPTIONS', 'var_graph', str(self.is_show_var_graph.get()))
+        self.config.set('OPTIONS', 'not_thinned', str(self.is_not_thinned.get()))
 
         if self.config.has_section('SELVAR'):
             if len(self.config.options('SELVAR')) > 0:
