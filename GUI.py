@@ -14,18 +14,18 @@ import time
 import multiprocessing as mp
 
 class Graphica():
-    def __init__(self):
+    def __init__(self, is_array, is_var):
         # Chart preparing
-        self.fig = plt.figure(num = 1)
         plt.ion()
         x = range(50)
         y = range(50)
-        self.line1, = plt.plot(x, y, figure = self.fig)
-        self.line2, = plt.plot(x, y, figure = self.fig)
-
-        self.fig_var = plt.figure(num = 2)
-        plt.ion()
-        self.line_v, = plb.plot(x, y, figure = self.fig_var)
+        if is_array == 1:
+            self.fig = plt.figure(num = 1)
+            self.line1, = plt.plot(x, y, figure = self.fig)
+            self.line2, = plt.plot(x, y, figure = self.fig)
+        if is_var == 1:
+            self.fig_var = plt.figure(num = 2)
+            self.line_v, = plb.plot(x, y, figure = self.fig_var)
 
     def Draw(self):
         data = q.get()
@@ -79,7 +79,7 @@ class Application(tk.Frame):
         self.setWindowPosition()
         self.master.bind("<Destroy>", self.onDestroy)
 
-        self.gr = Graphica()
+        self.gr = Graphica(self.is_show_graph.get(), self.is_show_var_graph.get())
 
         self.time_queue = deque([])
         self.time_queue_max = 100
