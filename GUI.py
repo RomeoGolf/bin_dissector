@@ -288,10 +288,6 @@ class Application(tk.Frame):
                 break
             # ============== Data processing and indication here ===============
 
-            #res = swertka.get_swertka(i['CodNonius'], i['Num_Swr'],
-            #                          i['Num_Div'], i['Diapazon'], i['Srez'])
-
-            # Sys_t_all(end + 1) = fix(Sys_t_ - Sys_t_0)*244.15e-6 + dT;
             curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6
             out_data = {}
             out_data.update({"Time": '%f' % curr_t})
