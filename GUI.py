@@ -16,14 +16,14 @@ import multiprocessing as mp
 class Graphica():
     def __init__(self):
         # Chart preparing
-        self.fig = plt.figure()
+        self.fig = plt.figure(num = 1)
         plt.ion()
         x = range(50)
         y = range(50)
         self.line1, = plt.plot(x, y, figure = self.fig)
         self.line2, = plt.plot(x, y, figure = self.fig)
 
-        self.fig_var = plt.figure()
+        self.fig_var = plt.figure(num = 2)
         plt.ion()
         self.line_v, = plb.plot(x, y, figure = self.fig_var)
 
@@ -31,8 +31,16 @@ class Graphica():
         data = q.get()
         i = data[2]
         hi_ = data[3]
+
         #if self.is_show_graph.get() == 1:
         if data[0] == 1:
+            if plt.get_fignums().count(1) == 0:
+                self.fig = plt.figure(num = 1)
+                x = range(2)
+                y = range(2)
+                self.line1, = plt.plot(x, y, figure = self.fig)
+                self.line2, = plt.plot(x, y, figure = self.fig)
+
             if len(self.line1.get_xdata()) != len(i['AKFW_0']):
                 self.line1.set_xdata(range(len(i['AKFW_0'])))
                 self.line2.set_xdata(range(len(i['AKFW_PI'])))
@@ -44,6 +52,13 @@ class Graphica():
             self.fig.canvas.flush_events()
 
         if data[1] == 1:
+            if plt.get_fignums().count(2) == 0:
+                self.fig_var = plt.figure(num = 2)
+                plt.ion()
+                x = range(2)
+                y = range(2)
+                self.line_v, = plb.plot(x, y, figure = self.fig_var)
+
             if len(self.line_v.get_xdata()) != (len(hi_)):
                 self.line_v.set_xdata(range(len(hi_)))
                 self.line_v.get_axes().axis([0, len(hi_), 0, max(self.line_v.get_ydata())])
