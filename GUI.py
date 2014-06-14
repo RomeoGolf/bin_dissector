@@ -62,12 +62,16 @@ class Application(tk.Frame):
         self.pack()
         self.createWidgets()
         self.setWindowPosition()
-        self.master.bind("<Configure>", self.save_geometry)
+        self.master.bind("<Destroy>", self.onDestroy)
 
         self.gr = Graphica()
 
         self.time_queue = deque([])
         self.time_queue_max = 100
+
+    def onDestroy(self, event):
+        self.save_geometry()
+        plt.close('all')
 
     def setWindowPosition(self):
         if self.config.has_option('POS', 'geom'):
@@ -443,7 +447,7 @@ class Application(tk.Frame):
         with open(self.ini_file, 'w') as configfile:
             self.config.write(configfile)
 
-    def save_geometry(self, event):
+    def save_geometry(self):
         if not self.config.has_section('POS'):
             self.config.add_section('POS')
         self.config.set('POS', 'geom', self.master.geometry(None))
