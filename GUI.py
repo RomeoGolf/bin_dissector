@@ -9,6 +9,8 @@ from collections import deque
 import matplotlib.pyplot as plt
 import matplotlib.pylab as plb
 
+import time
+
 class Application(tk.Frame):
     def __init__(self, master=None):
         self.ini_file = 'setting.ini'

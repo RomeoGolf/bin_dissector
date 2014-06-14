@@ -3,7 +3,6 @@ from data_config import *
 
 import struct
 import os
-import time
 import swertka
 import numpy as np
 
