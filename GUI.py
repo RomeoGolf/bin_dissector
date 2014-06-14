@@ -362,6 +362,7 @@ class Application(tk.Frame):
         pp = mp.Process(target = self.gr.Draw())
         #pp.start()
 
+        now_t = time.perf_counter()
         # data processing loop
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip):
             if self.stop:
@@ -405,11 +406,19 @@ class Application(tk.Frame):
             # progress bar and timer
             self.pb.step()
             if self.pb["value"] > 0:
+                old_t = now_t
                 now_t = time.perf_counter()
-                self.time_queue.append(now_t)
+                now_dt = now_t - old_t
+                self.time_queue.append(now_dt)
+
                 if len(self.time_queue) > self.time_queue_max:
                     self.time_queue.popleft()
-                t_aver = (now_t - self.time_queue[0]) / len(self.time_queue)
+
+                #t_aver = (now_t - self.time_queue[0]) / len(self.time_queue)
+                if len(self.time_queue) > 0:
+                    t_aver = sum(self.time_queue) / len(self.time_queue)
+                else:
+                    t_aver = 0
 
                 t2 = now_t - t1
                 self.l_time["text"] = self.time_to_text(t2)
