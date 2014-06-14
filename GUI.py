@@ -326,7 +326,9 @@ class Application(tk.Frame):
                     line_v.set_xdata(range(len(hi_)))
                     line_v.get_axes().axis([0, len(hi_), 0, max(line_v.get_ydata())])
 
-                line_v.set_ydata(hi_)
+                line_v['ydata'][len(hi_) - 1] = out_data['Hi']
+
+                #line_v.set_ydata(hi_)
                 fig_var.canvas.draw()
                 fig_var.canvas.flush_events()
 
