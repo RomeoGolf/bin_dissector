@@ -324,7 +324,7 @@ class Application(tk.Frame):
 
                 if len(line_v.get_xdata()) != (len(hi_)):
                     line_v.set_xdata(range(len(hi_)))
-                    line_v.get_axes().axis([0, len(hi_), 0, 700])
+                    line_v.get_axes().axis([0, len(hi_), 0, max(line_v.get_ydata())])
 
                 line_v.set_ydata(hi_)
                 fig_var.canvas.draw()
