@@ -11,6 +11,46 @@ import matplotlib.pylab as plb
 
 import time
 
+import multiprocessing as mp
+
+class Graphica():
+    def __init__(self):
+        # Chart preparing
+        self.fig = plt.figure()
+        plt.ion()
+        x = range(50)
+        y = range(50)
+        self.line1, = plt.plot(x, y, figure = self.fig)
+        self.line2, = plt.plot(x, y, figure = self.fig)
+
+        self.fig_var = plt.figure()
+        plt.ion()
+        self.line_v, = plb.plot(x, y, figure = self.fig_var)
+
+    def Draw(self):
+        data = q.get()
+        i = data[0]
+        hi_ = data[1]
+        #if self.is_show_graph.get() == 1:
+        if True:
+            if len(self.line1.get_xdata()) != len(i['AKFW_0']):
+                self.line1.set_xdata(range(len(i['AKFW_0'])))
+                self.line2.set_xdata(range(len(i['AKFW_PI'])))
+                self.line1.get_axes().axis([0, len(i['AKFW_0']), -10000, 10000])
+
+            self.line1.set_ydata(i['AKFW_0'])
+            self.line2.set_ydata(i['AKFW_PI'])
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
+
+        if len(hi_) > 0:
+            if len(self.line_v.get_xdata()) != (len(hi_)):
+                self.line_v.set_xdata(range(len(hi_)))
+                self.line_v.get_axes().axis([0, len(hi_), 0, max(self.line_v.get_ydata())])
+            self.line_v.set_ydata(hi_)
+            self.fig_var.canvas.draw()
+            self.fig_var.canvas.flush_events()
+
 class Application(tk.Frame):
     def __init__(self, master=None):
         self.ini_file = 'setting.ini'
@@ -23,6 +63,8 @@ class Application(tk.Frame):
         self.createWidgets()
         self.setWindowPosition()
         self.master.bind("<Configure>", self.save_geometry)
+
+        self.gr = Graphica()
 
         self.time_queue = deque([])
         self.time_queue_max = 100
@@ -243,7 +285,7 @@ class Application(tk.Frame):
 
         t1 = time.perf_counter()    # for timer
 
-        # Chart preparing
+        '''# Chart preparing
         fig = plt.figure()
         plt.ion()
         x = range(60)
@@ -254,7 +296,7 @@ class Application(tk.Frame):
 
         fig_var = plt.figure()
         plt.ion()
-        line_v, = plb.plot(x, y, figure = fig_var)
+        line_v, = plb.plot(x, y, figure = fig_var)'''
 
         # skip count
         skip = 0
@@ -266,7 +308,8 @@ class Application(tk.Frame):
         # open data file
         data_file = open(self.data_file_name, "rb")
         # get time of first block
-        self.start_time = self.dr.get_vars(data_file, 1).__next__()['Sys_t_']
+        i = self.dr.get_vars(data_file, 1).__next__()
+        self.start_time = i['Sys_t_']
         data_file.seek(0)
         if self.is_use_skip.get() == 1:
             data_file.seek(self.dr.dconf.packet_length * skip_b)
@@ -280,6 +323,9 @@ class Application(tk.Frame):
         result_file.writelines('{}{}'.format(res_header, '\n'))
 
         hi_ = []
+        q.put([i, hi_])
+        pp = mp.Process(target = self.gr.Draw())
+        #pp.start()
 
         # data processing loop
         for i in self.dr.get_vars(data_file, self.dr.block_num - skip):
@@ -310,7 +356,14 @@ class Application(tk.Frame):
             #    plt.draw()
             #    fig.canvas.flush_events()
 
-            if self.is_show_graph.get() == 1:
+            if pp.is_alive():
+                pass
+            else:
+                q.put([i, hi_])
+                pp = mp.Process(target = self.gr.Draw())
+                pp.start()
+
+            '''if self.is_show_graph.get() == 1:
                 if len(line1.get_xdata()) != len(i['AKFW_0']):
                     line1.set_xdata(range(len(i['AKFW_0'])))
                     line2.set_xdata(range(len(i['AKFW_PI'])))
@@ -330,7 +383,7 @@ class Application(tk.Frame):
 
                 #line_v.set_ydata(hi_)
                 fig_var.canvas.draw()
-                fig_var.canvas.flush_events()
+                fig_var.canvas.flush_events()'''
 
             self.l_packet["text"] = str(i["Npack_"])
 
@@ -361,9 +414,13 @@ class Application(tk.Frame):
 
             self.update()
 
-        plt.close(fig)
-        plt.close(fig_var)
+        #plt.close(self.gr.fig)
+        #plt.close(self.gr.fig_var)
 
+
+        ''''q.put([i, hi_])
+        pp = mp.Process(target = self.gr.Draw())
+        pp.start()'''
 
         data_file.close()
         result_file.close()
@@ -404,7 +461,9 @@ class Application(tk.Frame):
             self.config.add_section('POS')
         self.config.set('POS', 'geom', self.master.geometry(None))
 
-root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
-app.save_app_config()
+if __name__ == '__main__':
+    root = tk.Tk()
+    q = mp.Queue()
+    app = Application(master=root)
+    app.mainloop()
+    app.save_app_config()
