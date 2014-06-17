@@ -64,8 +64,8 @@ class Graphica():
 
             if len(self.line_v.get_xdata()) != (len(arr_var[0])):
                 self.line_v.set_xdata(range(len(arr_var[0])))
-                self.line_v.get_axes().axis([0, len(arr_var[0]), 0, max(self.line_v.get_ydata())])
             self.line_v.set_ydata(arr_var[0])
+            self.line_v.get_axes().axis([0, len(arr_var[0]), 0, max(self.line_v.get_ydata())])
             self.fig_var.canvas.draw()
             self.fig_var.canvas.flush_events()
 
