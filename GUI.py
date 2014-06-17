@@ -63,15 +63,19 @@ class Graphica():
         if data[1] == 1:
             if plt.get_fignums().count(2) == 0:
                 self.fig_var = plt.figure(num = 2)
-                plt.ion()
-                x = range(2)
-                y = range(2)
-                self.line_v, = plb.plot(x, y, figure = self.fig_var)
 
-            if len(self.line_v.get_xdata()) != (len(arr_var[0])):
-                self.line_v.set_xdata(range(len(arr_var[0])))
-            self.line_v.set_ydata(arr_var[0])
-            self.line_v.get_axes().axis([0, len(arr_var[0]), 0, max(self.line_v.get_ydata())])
+            if len(self.line_v) < len(arr_var):
+                for i in range(len(arr_var) - len(self.line_v)):
+                    line, = plt.plot(x, y, figure = plt.figure(num = 2))
+                    self.line_v.append(line)
+
+            if len(self.line_v[0].get_xdata()) != (len(arr_var[0])):
+                self.line_v[0].set_xdata(range(len(arr_var[0])))
+
+            for line in self.line_v:
+                line.set_ydata(arr_var[self.line_v.index(line)])
+
+            self.line_v[0].get_axes().axis([0, len(arr_var[0]), 0, max(self.line_v[0].get_ydata())])
             self.fig_var.canvas.draw()
             self.fig_var.canvas.flush_events()
 
