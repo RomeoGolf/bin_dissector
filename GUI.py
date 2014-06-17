@@ -17,8 +17,8 @@ class Graphica():
     def __init__(self, is_array, is_var):
         # Chart preparing
         plt.ion()
-        x = range(50)
-        y = range(50)
+        x = range(5)
+        y = range(5)
         if is_array == 1:
             self.fig = plt.figure(num = 1)
             self.line1, = plt.plot(x, y, figure = self.fig)
