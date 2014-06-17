@@ -31,7 +31,7 @@ class Graphica():
     def Draw(self):
         data = q.get()
         arr_data = data[2]
-        hi_ = data[3]
+        arr_var = data[3]
         x = range(20)
         y = range(20)
 
@@ -62,10 +62,10 @@ class Graphica():
                 y = range(2)
                 self.line_v, = plb.plot(x, y, figure = self.fig_var)
 
-            if len(self.line_v.get_xdata()) != (len(hi_)):
-                self.line_v.set_xdata(range(len(hi_)))
-                self.line_v.get_axes().axis([0, len(hi_), 0, max(self.line_v.get_ydata())])
-            self.line_v.set_ydata(hi_)
+            if len(self.line_v.get_xdata()) != (len(arr_var[0])):
+                self.line_v.set_xdata(range(len(arr_var[0])))
+                self.line_v.get_axes().axis([0, len(arr_var[0]), 0, max(self.line_v.get_ydata())])
+            self.line_v.set_ydata(arr_var[0])
             self.fig_var.canvas.draw()
             self.fig_var.canvas.flush_events()
 
@@ -388,16 +388,17 @@ class Application(tk.Frame):
             arr_data = []
             arr_data.append(i['AKFW_0'])
             arr_data.append(i['AKFW_PI'])
+            arr_var = [hi_]
             if self.is_not_thinned.get():
                 q.put([self.is_show_graph.get(),
-                                self.is_show_var_graph.get(), arr_data, hi_])
+                                self.is_show_var_graph.get(), arr_data, arr_var])
                 self.gr.Draw()
             else:
                 if pp.is_alive():
                     pass
                 else:
                     q.put([self.is_show_graph.get(),
-                                self.is_show_var_graph.get(), arr_data, hi_])
+                                self.is_show_var_graph.get(), arr_data, arr_var])
                     pp = mp.Process(target = self.gr.Draw())
                     pp.start()
 
