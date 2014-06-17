@@ -358,7 +358,7 @@ class Application(tk.Frame):
         result_file.writelines('{}{}'.format(res_header, '\n'))
 
         hi_ = []
-        q.put([0, 0,  i, hi_])
+        q.put([0, 0,  0, 0])
         pp = mp.Process(target = self.gr.Draw())
         #pp.start()
 
