@@ -23,13 +23,7 @@ class Graphica():
         x = range(5)
         y = range(5)
         self.line_a = []
-        #self.line_v = []
-        if is_array == 1:
-            self.fig = plt.figure(num = 1)
-
-        if is_var == 1:
-            self.fig_var = plt.figure(num = 2)
-            self.line_v, = plb.plot(x, y, figure = self.fig_var)
+        self.line_v = []
 
     def Draw(self):
         data = q.get()
