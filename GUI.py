@@ -23,10 +23,7 @@ class Graphica():
         #self.line_v = []
         if is_array == 1:
             self.fig = plt.figure(num = 1)
-            line, = plt.plot(x, y, figure = self.fig)
-            self.line_a.append(line)
-            line, = plt.plot(x, y, figure = self.fig)
-            self.line_a.append(line)
+
         if is_var == 1:
             self.fig_var = plt.figure(num = 2)
             self.line_v, = plb.plot(x, y, figure = self.fig_var)
@@ -35,21 +32,17 @@ class Graphica():
         data = q.get()
         arr_data = data[2]
         hi_ = data[3]
+        x = range(20)
+        y = range(20)
 
-        #if self.is_show_graph.get() == 1:
         if data[0] == 1:
             if plt.get_fignums().count(1) == 0:
                 self.fig = plt.figure(num = 1)
-                x = range(2)
-                y = range(2)
-                self.fig = plt.figure(num = 1)
-                line, = plt.plot(x, y, figure = self.fig)
-                self.line_a.append(line)
-                line, = plt.plot(x, y, figure = self.fig)
-                self.line_a.append(line)
-                #self.line1, = plt.plot(x, y, figure = self.fig)
-                #self.line2, = plt.plot(x, y, figure = self.fig)
 
+            if len(self.line_a) < len(arr_data):
+                for i in range(len(arr_data) - len(self.line_a)):
+                    line, = plt.plot(x, y, figure = plt.figure(num = 1))
+                    self.line_a.append(line)
 
             if len(self.line_a[0].get_xdata()) != len(arr_data[0]):
                 self.line_a[0].set_xdata(range(len(arr_data[0])))
