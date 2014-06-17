@@ -55,6 +55,8 @@ class Graphica():
                 self.a_maxx = 1;
             if self.a_maxy > 1000000:
                 self.a_maxy = 1;
+            if self.a_miny < -1000000:
+                self.a_miny = 0;
 
             for line in self.line_a:
                 if len(line.get_xdata()) != len(arr_data[self.line_a.index(line)]):
