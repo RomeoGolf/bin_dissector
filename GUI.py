@@ -429,23 +429,23 @@ class Application(tk.Frame):
             tmp_arr = scipy.array(i['AKFW_0'])
             envelope_a = scipy.ndimage.maximum_filter(tmp_arr, 8)
 
-            # TODO : insert if show both chart
-            arr_data = []
-            arr_data.append(i['AKFW_0'])
-            arr_data.append(i['AKFW_PI'])
-            arr_data.append(envelope_a)
-            arr_var = [hi_, sys_dt_]
+            if (self.is_show_graph.get() == 1) or (self.is_show_var_graph.get() == 1):
+                arr_data = []
+                arr_data.append(i['AKFW_0'])
+                arr_data.append(i['AKFW_PI'])
+                arr_data.append(envelope_a)
+                arr_var = [hi_, sys_dt_]
 
-            if self.is_not_thinned.get():
-                q.put([self.is_show_graph.get(),
-                                self.is_show_var_graph.get(), arr_data, arr_var])
-                self.gr.Draw()
-            else:
-                if not pp.is_alive():
+                if self.is_not_thinned.get():
                     q.put([self.is_show_graph.get(),
                                 self.is_show_var_graph.get(), arr_data, arr_var])
-                    pp = mp.Process(target = self.gr.Draw())
-                    pp.start()
+                    self.gr.Draw()
+                else:
+                    if not pp.is_alive():
+                        q.put([self.is_show_graph.get(),
+                                self.is_show_var_graph.get(), arr_data, arr_var])
+                        pp = mp.Process(target = self.gr.Draw())
+                        pp.start()
 
             self.l_packet["text"] = str(i["Npack_"])
 
