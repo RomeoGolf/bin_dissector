@@ -24,6 +24,15 @@ class Graphica():
         y = range(5)
         self.line_a = []
         self.line_v = []
+        self.a_minx = 0
+        self.a_miny = 0
+        self.a_maxx = 1
+        self.a_maxy = 1
+
+        self.v_minx = 0
+        self.v_miny = 0
+        self.v_maxx = 1
+        self.v_maxy = 1
 
     def Draw(self):
         data = q.get()
@@ -41,15 +50,29 @@ class Graphica():
                     line, = plt.plot(x, y, figure = plt.figure(num = 1))
                     self.line_a.append(line)
 
-            # TODO : set individual length or (clear, then plot)
-            if len(self.line_a[0].get_xdata()) != len(arr_data[0]):
-                self.line_a[0].set_xdata(range(len(arr_data[0])))
-                self.line_a[1].set_xdata(range(len(arr_data[1])))
-                self.line_a[2].set_xdata(range(len(arr_data[2])))
-                self.line_a[0].get_axes().axis([0, len(arr_data[0]), -10000, 10000])
+            # overgrow protection
+            if self.a_maxx > 1000000:
+                self.a_maxx = 1;
+            if self.a_maxy > 1000000:
+                self.a_maxy = 1;
 
             for line in self.line_a:
+                if len(line.get_xdata()) != len(arr_data[self.line_a.index(line)]):
+                    line.set_xdata(range(len(arr_data[self.line_a.index(line)])))
                 line.set_ydata(arr_data[self.line_a.index(line)])
+
+                if self.a_minx > min(line.get_xdata()):
+                    self.a_minx = min(line.get_xdata())
+                if self.a_maxx < max(line.get_xdata()):
+                    self.a_maxx = max(line.get_xdata())
+
+                if self.a_miny > min(line.get_ydata()):
+                    self.a_miny = min(line.get_ydata())
+                if self.a_maxy < max(line.get_ydata()):
+                    self.a_maxy = max(line.get_ydata())
+
+            self.line_a[0].get_axes().axis([self.a_minx, self.a_maxx,
+                                                self.a_miny, self.a_maxy])
 
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
@@ -63,14 +86,24 @@ class Graphica():
                     line, = plt.plot(x, y, figure = plt.figure(num = 2))
                     self.line_v.append(line)
 
-            if len(self.line_v[0].get_xdata()) != (len(arr_var[0])):
-                self.line_v[0].set_xdata(range(len(arr_var[0])))
-                self.line_v[1].set_xdata(range(len(arr_var[0])))
-
             for line in self.line_v:
+                if len(line.get_xdata()) != len(arr_var[self.line_v.index(line)]):
+                    line.set_xdata(range(len(arr_var[self.line_v.index(line)])))
                 line.set_ydata(arr_var[self.line_v.index(line)])
 
-            self.line_v[0].get_axes().axis([0, len(arr_var[0]), 0, max(self.line_v[0].get_ydata())])
+                if self.v_minx > min(line.get_xdata()):
+                    self.v_minx = min(line.get_xdata())
+                if self.v_maxx < max(line.get_xdata()):
+                    self.v_maxx = max(line.get_xdata())
+
+                if self.v_miny > min(line.get_ydata()):
+                    self.v_miny = min(line.get_ydata())
+                if self.v_maxy < max(line.get_ydata()):
+                    self.v_maxy = max(line.get_ydata())
+
+            self.line_v[0].get_axes().axis([self.v_minx, self.v_maxx,
+                                                self.v_miny, self.v_maxy])
+
             self.fig_var.canvas.draw()
             self.fig_var.canvas.flush_events()
 
