@@ -65,6 +65,7 @@ class Graphica():
 
             if len(self.line_v[0].get_xdata()) != (len(arr_var[0])):
                 self.line_v[0].set_xdata(range(len(arr_var[0])))
+                self.line_v[1].set_xdata(range(len(arr_var[0])))
 
             for line in self.line_v:
                 line.set_ydata(arr_var[self.line_v.index(line)])
@@ -346,12 +347,14 @@ class Application(tk.Frame):
         result_file = open(self.result_file_name, "w", 1)
 
         # assembling data names to out
-        out_vars = ("Time", "Hi", "Sys_t")
+        out_vars = ("Time", "Hi", "Sys_t", "sys_dt")
         # write the header to the result file
         res_header = '\t'.join(out_vars)
         result_file.writelines('{}{}'.format(res_header, '\n'))
 
         hi_ = []
+        sys_dt_ = []
+        old_sys_t = 0
         q.put([0, 0,  0, 0])
         pp = mp.Process(target = self.gr.Draw())
 
@@ -369,6 +372,13 @@ class Application(tk.Frame):
             out_data.update({"Hi": '%f' % (i['Hi'] / 8 - 32)})
             out_data.update({"Sys_t": '%d' % i['Sys_t_']})
 
+            sys_dt = curr_t - old_sys_t
+            old_sys_t = curr_t
+            if (sys_dt < 0) or (sys_dt > 1):
+                sys_dt = 0;
+            sys_dt_.append(sys_dt)
+            out_data.update({"sys_dt": '%f' % sys_dt})
+
             hi_.append(i['Hi'] / 8 - 32)
 
             out_data_str = [out_data[ind] for ind in out_vars]
@@ -381,7 +391,7 @@ class Application(tk.Frame):
             arr_data.append(i['AKFW_0'])
             arr_data.append(i['AKFW_PI'])
             arr_data.append(envelope_a)
-            arr_var = [hi_]
+            arr_var = [hi_, sys_dt_]
             if self.is_not_thinned.get():
                 q.put([self.is_show_graph.get(),
                                 self.is_show_var_graph.get(), arr_data, arr_var])
