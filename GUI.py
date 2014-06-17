@@ -382,10 +382,9 @@ class Application(tk.Frame):
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
             if self.is_not_thinned.get():
-                if self.is_show_graph.get() == 1:
-                    q.put([self.is_show_graph.get(),
+                q.put([self.is_show_graph.get(),
                                         self.is_show_var_graph.get(), i, hi_])
-                    self.gr.Draw()
+                self.gr.Draw()
             else:
                 if pp.is_alive():
                     pass
