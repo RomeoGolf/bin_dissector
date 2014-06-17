@@ -22,13 +22,15 @@ class Graphica():
         plt.ion()
         x = range(5)
         y = range(5)
+        # chart lines for arrays and variables
         self.line_a = []
         self.line_v = []
+
+        # max & min for axes
         self.a_minx = 0
         self.a_miny = 0
         self.a_maxx = 1
         self.a_maxy = 1
-
         self.v_minx = 0
         self.v_miny = 0
         self.v_maxx = 1
@@ -38,13 +40,15 @@ class Graphica():
         data = q.get()
         arr_data = data[2]
         arr_var = data[3]
-        x = range(20)
-        y = range(20)
+        x = range(2)
+        y = range(2)
 
+        # need show arrays
         if data[0] == 1:
+            # create figure if need
             if plt.get_fignums().count(1) == 0:
                 self.fig = plt.figure(num = 1)
-
+            # create lines if need
             if len(self.line_a) < len(arr_data):
                 for i in range(len(arr_data) - len(self.line_a)):
                     line, = plt.plot(x, y, figure = plt.figure(num = 1))
@@ -58,6 +62,7 @@ class Graphica():
             if self.a_miny < -1000000:
                 self.a_miny = 0;
 
+            # match line length and draw lines
             for line in self.line_a:
                 if len(line.get_xdata()) != len(arr_data[self.line_a.index(line)]):
                     line.set_xdata(range(len(arr_data[self.line_a.index(line)])))
@@ -72,13 +77,13 @@ class Graphica():
                     self.a_miny = min(line.get_ydata())
                 if self.a_maxy < max(line.get_ydata()):
                     self.a_maxy = max(line.get_ydata())
-
+            # set axes
             self.line_a[0].get_axes().axis([self.a_minx, self.a_maxx,
                                                 self.a_miny, self.a_maxy])
-
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
 
+        # need show variables
         if data[1] == 1:
             if plt.get_fignums().count(2) == 0:
                 self.fig_var = plt.figure(num = 2)
@@ -360,9 +365,8 @@ class Application(tk.Frame):
         if self.is_use_skip.get() == 1:
             skip_b = int(self.str_skip_b.get())
             skip_e = int(self.str_skip_e.get())
-
-        t1 = time.perf_counter()    # for timer
-
+        # for timer
+        t1 = time.perf_counter()
         # skip count
         skip = 0
         if self.is_use_skip.get() == 1:
@@ -387,9 +391,12 @@ class Application(tk.Frame):
         res_header = '\t'.join(out_vars)
         result_file.writelines('{}{}'.format(res_header, '\n'))
 
+        # data preparing for var chart
         hi_ = []
         sys_dt_ = []
         old_sys_t = 0
+
+        # subprocess initialization
         q.put([0, 0,  0, 0])
         pp = mp.Process(target = self.gr.Draw())
 
@@ -421,20 +428,20 @@ class Application(tk.Frame):
 
             tmp_arr = scipy.array(i['AKFW_0'])
             envelope_a = scipy.ndimage.maximum_filter(tmp_arr, 8)
+
             # TODO : insert if show both chart
             arr_data = []
             arr_data.append(i['AKFW_0'])
             arr_data.append(i['AKFW_PI'])
             arr_data.append(envelope_a)
             arr_var = [hi_, sys_dt_]
+
             if self.is_not_thinned.get():
                 q.put([self.is_show_graph.get(),
                                 self.is_show_var_graph.get(), arr_data, arr_var])
                 self.gr.Draw()
             else:
-                if pp.is_alive():
-                    pass
-                else:
+                if not pp.is_alive():
                     q.put([self.is_show_graph.get(),
                                 self.is_show_var_graph.get(), arr_data, arr_var])
                     pp = mp.Process(target = self.gr.Draw())
@@ -442,6 +449,7 @@ class Application(tk.Frame):
 
             self.l_packet["text"] = str(i["Npack_"])
 
+            # show variables on GUI
             for var in self.sel_var_list.keys():
                 if list(i.keys()).count(var) > 0:
                     self.sel_var_list[var]["text"] = str(i[var])
