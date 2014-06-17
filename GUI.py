@@ -13,6 +13,9 @@ import time
 
 import multiprocessing as mp
 
+import scipy
+from scipy import ndimage
+
 class Graphica():
     def __init__(self, is_array, is_var):
         # Chart preparing
@@ -44,13 +47,16 @@ class Graphica():
                     line, = plt.plot(x, y, figure = plt.figure(num = 1))
                     self.line_a.append(line)
 
+            # TODO : set individual length or (clear, then plot)
             if len(self.line_a[0].get_xdata()) != len(arr_data[0]):
                 self.line_a[0].set_xdata(range(len(arr_data[0])))
                 self.line_a[1].set_xdata(range(len(arr_data[1])))
+                self.line_a[2].set_xdata(range(len(arr_data[2])))
                 self.line_a[0].get_axes().axis([0, len(arr_data[0]), -10000, 10000])
 
-            self.line_a[0].set_ydata(arr_data[0])
-            self.line_a[1].set_ydata(arr_data[1])
+            for line in self.line_a:
+                line.set_ydata(arr_data[self.line_a.index(line)])
+
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
 
@@ -370,10 +376,13 @@ class Application(tk.Frame):
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
+            tmp_arr = scipy.array(i['AKFW_0'])
+            envelope_a = scipy.ndimage.maximum_filter(tmp_arr, 8)
             # TODO : insert if show both chart
             arr_data = []
             arr_data.append(i['AKFW_0'])
             arr_data.append(i['AKFW_PI'])
+            arr_data.append(envelope_a)
             arr_var = [hi_]
             if self.is_not_thinned.get():
                 q.put([self.is_show_graph.get(),
