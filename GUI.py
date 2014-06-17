@@ -19,17 +19,21 @@ class Graphica():
         plt.ion()
         x = range(5)
         y = range(5)
+        self.line_a = []
+        #self.line_v = []
         if is_array == 1:
             self.fig = plt.figure(num = 1)
-            self.line1, = plt.plot(x, y, figure = self.fig)
-            self.line2, = plt.plot(x, y, figure = self.fig)
+            line, = plt.plot(x, y, figure = self.fig)
+            self.line_a.append(line)
+            line, = plt.plot(x, y, figure = self.fig)
+            self.line_a.append(line)
         if is_var == 1:
             self.fig_var = plt.figure(num = 2)
             self.line_v, = plb.plot(x, y, figure = self.fig_var)
 
     def Draw(self):
         data = q.get()
-        i = data[2]
+        arr_data = data[2]
         hi_ = data[3]
 
         #if self.is_show_graph.get() == 1:
@@ -38,16 +42,22 @@ class Graphica():
                 self.fig = plt.figure(num = 1)
                 x = range(2)
                 y = range(2)
-                self.line1, = plt.plot(x, y, figure = self.fig)
-                self.line2, = plt.plot(x, y, figure = self.fig)
+                self.fig = plt.figure(num = 1)
+                line, = plt.plot(x, y, figure = self.fig)
+                self.line_a.append(line)
+                line, = plt.plot(x, y, figure = self.fig)
+                self.line_a.append(line)
+                #self.line1, = plt.plot(x, y, figure = self.fig)
+                #self.line2, = plt.plot(x, y, figure = self.fig)
 
-            if len(self.line1.get_xdata()) != len(i['AKFW_0']):
-                self.line1.set_xdata(range(len(i['AKFW_0'])))
-                self.line2.set_xdata(range(len(i['AKFW_PI'])))
-                self.line1.get_axes().axis([0, len(i['AKFW_0']), -10000, 10000])
 
-            self.line1.set_ydata(i['AKFW_0'])
-            self.line2.set_ydata(i['AKFW_PI'])
+            if len(self.line_a[0].get_xdata()) != len(arr_data[0]):
+                self.line_a[0].set_xdata(range(len(arr_data[0])))
+                self.line_a[1].set_xdata(range(len(arr_data[1])))
+                self.line_a[0].get_axes().axis([0, len(arr_data[0]), -10000, 10000])
+
+            self.line_a[0].set_ydata(arr_data[0])
+            self.line_a[1].set_ydata(arr_data[1])
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
 
@@ -381,16 +391,20 @@ class Application(tk.Frame):
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
+            # TODO : insert if show both chart
+            arr_data = []
+            arr_data.append(i['AKFW_0'])
+            arr_data.append(i['AKFW_PI'])
             if self.is_not_thinned.get():
                 q.put([self.is_show_graph.get(),
-                                        self.is_show_var_graph.get(), i, hi_])
+                                self.is_show_var_graph.get(), arr_data, hi_])
                 self.gr.Draw()
             else:
                 if pp.is_alive():
                     pass
                 else:
                     q.put([self.is_show_graph.get(),
-                                        self.is_show_var_graph.get(), i, hi_])
+                                self.is_show_var_graph.get(), arr_data, hi_])
                     pp = mp.Process(target = self.gr.Draw())
                     pp.start()
 
