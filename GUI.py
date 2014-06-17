@@ -323,19 +323,6 @@ class Application(tk.Frame):
 
         t1 = time.perf_counter()    # for timer
 
-        '''# Chart preparing
-        fig = plt.figure()
-        plt.ion()
-        x = range(60)
-        y = [1 for i in x]
-        y[0] = 0000
-        line1, = plt.plot(x, y, figure = fig)
-        line2, = plt.plot(x, y, figure = fig)
-
-        fig_var = plt.figure()
-        plt.ion()
-        line_v, = plb.plot(x, y, figure = fig_var)'''
-
         # skip count
         skip = 0
         if self.is_use_skip.get() == 1:
@@ -363,7 +350,6 @@ class Application(tk.Frame):
         hi_ = []
         q.put([0, 0,  0, 0])
         pp = mp.Process(target = self.gr.Draw())
-        #pp.start()
 
         now_t = time.perf_counter()
         # data processing loop
@@ -438,9 +424,6 @@ class Application(tk.Frame):
                 self.l_rem_time["text"] = self.time_to_text(t_remained)
 
             self.update()
-
-        #plt.close(self.gr.fig)
-        #plt.close(self.gr.fig_var)
 
         data_file.close()
         result_file.close()
