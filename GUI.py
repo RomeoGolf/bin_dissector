@@ -15,6 +15,7 @@ import multiprocessing as mp
 
 import scipy
 from scipy import ndimage
+import swertka
 
 class Graphica():
     def __init__(self, is_array, is_var):

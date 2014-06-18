@@ -3,7 +3,6 @@ from data_config import *
 
 import struct
 import os
-import swertka
 import numpy as np
 
 # (66, 83, 73, 64, 100, 50, 49, 48)
