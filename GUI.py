@@ -376,6 +376,11 @@ class Application(tk.Frame):
 
         # open data file
         data_file = open(self.data_file_name, "rb")
+
+        start_h = 11
+        start_m = 27
+        start_s = 22
+        start_t = start_h * 60 * 60 + start_m * 60 + start_s
         # get time of first block
         i = self.dr.get_vars(data_file, 1).__next__()
         self.start_time = i['Sys_t_']
