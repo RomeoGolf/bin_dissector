@@ -392,7 +392,7 @@ class Application(tk.Frame):
         result_file = open(self.result_file_name, "w", 1)
 
         # assembling data names to out
-        out_vars = ("Time", "Hi", "Sys_t", "sys_dt")
+        out_vars = ("Time", "Hi", "Sys_t")
         # write the header to the result file
         res_header = '\t'.join(out_vars)
         result_file.writelines('{}{}'.format(res_header, '\n'))
@@ -413,6 +413,8 @@ class Application(tk.Frame):
                 self.stop = False
                 break
             # ============== Data processing and indication here ===============
+            result = swertka.get_swertka(i['CodNonius'], i['Num_Swr'],
+                                 i['Num_Div'], i['Diapazon'], i['Srez'])
 
             # prepare data for file
             curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6  + start_t
@@ -421,29 +423,18 @@ class Application(tk.Frame):
             out_data.update({"Hi": '%f' % (i['Hi'] / 8 - 32)})
             out_data.update({"Sys_t": '%d' % i['Sys_t_']})
 
-            sys_dt = curr_t - old_sys_t
-            old_sys_t = curr_t
-            if (sys_dt < 0) or (sys_dt > 1):
-                sys_dt = 0;
-            sys_dt_.append(sys_dt)
-            out_data.update({"sys_dt": '%f' % sys_dt})
-
-
             # write data to file
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
             # data for charts
             hi_.append(i['Hi'] / 8 - 32)
-            tmp_arr = scipy.array(i['AKFW_0'])
-            envelope_a = scipy.ndimage.maximum_filter(tmp_arr, 8)
 
             if (self.is_show_graph.get() == 1) or (self.is_show_var_graph.get() == 1):
                 arr_data = []
-                arr_data.append(i['AKFW_0'])
-                arr_data.append(i['AKFW_PI'])
-                arr_data.append(envelope_a)
-                arr_var = [hi_, sys_dt_]
+                arr_data.append(result)
+                arr_data.append(i['Swertka'][0:i['Num_Swr']])
+                arr_var = [hi_]
 
                 if self.is_not_thinned.get():
                     q.put([self.is_show_graph.get(),
