@@ -408,7 +408,8 @@ class Application(tk.Frame):
                 break
             # ============== Data processing and indication here ===============
 
-            curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6
+            # prepare data for file
+            curr_t = (i['Sys_t_'] - self.start_time) * 244.15e-6  + start_t
             out_data = {}
             out_data.update({"Time": '%f' % curr_t})
             out_data.update({"Hi": '%f' % (i['Hi'] / 8 - 32)})
@@ -421,11 +422,13 @@ class Application(tk.Frame):
             sys_dt_.append(sys_dt)
             out_data.update({"sys_dt": '%f' % sys_dt})
 
-            hi_.append(i['Hi'] / 8 - 32)
 
+            # write data to file
             out_data_str = [out_data[ind] for ind in out_vars]
             result_file.writelines('{}{}'.format('\t'.join(out_data_str), '\n'))
 
+            # data for charts
+            hi_.append(i['Hi'] / 8 - 32)
             tmp_arr = scipy.array(i['AKFW_0'])
             envelope_a = scipy.ndimage.maximum_filter(tmp_arr, 8)
 
