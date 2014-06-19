@@ -49,6 +49,8 @@ class Graphica():
             # create figure if need
             if plt.get_fignums().count(1) == 0:
                 self.fig = plt.figure(num = 1)
+                self.line_a.clear()
+                
             # create lines if need
             if len(self.line_a) < len(arr_data):
                 for i in range(len(arr_data) - len(self.line_a)):
@@ -88,6 +90,7 @@ class Graphica():
         if data[1] == 1:
             if plt.get_fignums().count(2) == 0:
                 self.fig_var = plt.figure(num = 2)
+                self.line_v.clear()
 
             if len(self.line_v) < len(arr_var):
                 for i in range(len(arr_var) - len(self.line_v)):
