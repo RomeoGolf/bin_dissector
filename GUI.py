@@ -375,6 +375,7 @@ class Application(tk.Frame):
         skip = 0
         if self.is_use_skip.get() == 1:
             skip = skip_b + skip_e
+        pack_cnt = skip
         self.pb["maximum"] = self.dr.block_num - skip
         self.pb["value"] = 0
 
@@ -450,8 +451,6 @@ class Application(tk.Frame):
                         pp = mp.Process(target = self.gr.Draw())
                         pp.start()
 
-            self.l_packet["text"] = str(i["Npack_"])
-
             # show variables on GUI
             for var in self.sel_var_list.keys():
                 if list(i.keys()).count(var) > 0:
@@ -459,6 +458,9 @@ class Application(tk.Frame):
                 if list(out_data.keys()).count(var) > 0:
                     self.sel_var_list[var]["text"] = str(out_data[var])
             # ==================================================================
+            self.l_packet["text"] = str(pack_cnt)
+            pack_cnt = pack_cnt + 1
+
             # progress bar and timer
             self.pb.step()
             if self.pb["value"] > 0:
